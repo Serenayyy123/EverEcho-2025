@@ -10,7 +10,8 @@
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
-    "test": "jest --coverage"
+    "test": "jest --coverage",
+    "resync:metadata": "npx tsx scripts/resync-all-metadata.ts"
   },
   "keywords": ["everecho", "web3", "profile"],
   "author": "",
