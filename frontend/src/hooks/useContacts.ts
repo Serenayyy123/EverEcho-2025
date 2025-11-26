@@ -16,21 +16,6 @@ export function useContacts(
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const _canViewContacts = (task: Task | null) => {
-    if (!task || !address) return false;
-    
-    // 只有 InProgress/Submitted/Completed 状态可以查看
-    if (![TaskStatus.InProgress, TaskStatus.Submitted, TaskStatus.Completed].includes(task.status)) {
-      return false;
-    }
-
-    // 只有 Creator 或 Helper 可以查看
-    return (
-      address.toLowerCase() === task.creator.toLowerCase() ||
-      address.toLowerCase() === task.helper.toLowerCase()
-    );
-  };
-
   const loadContacts = async () => {
     if (!taskId || !signer || !address) {
       setError('Missing required parameters');
