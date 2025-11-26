@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { ethers } from 'ethers';
 import { apiClient } from '../api/client';
-import { Task, TaskStatus } from './useTasks';
 
 /**
  * 真实联系方式 Hook
