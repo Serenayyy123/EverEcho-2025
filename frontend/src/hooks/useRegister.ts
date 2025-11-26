@@ -78,7 +78,7 @@ export function useRegister(
 
       // Step 3: 检查注册后余额变化（冻结点 1.2-8）
       const balanceAfter = await tokenContract.balanceOf(userAddress);
-      const mintedAmount = balanceAfter - balanceBefore;
+      const mintedAmount: bigint = balanceAfter - balanceBefore;
       const mintedAmountFormatted = ethers.formatEther(mintedAmount);
       
       console.log('Balance after registration:', ethers.formatEther(balanceAfter));
