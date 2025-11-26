@@ -3,7 +3,7 @@
  * 监听 TaskEscrow 合约事件，自动同步数据到数据库
  */
 
-import { ethers } from 'ethers';
+import { ethers, EventLog } from 'ethers';
 import { PrismaClient } from '@prisma/client';
 import { generateDEK, wrapDEK, encryptContacts } from './encryptionService';
 import { syncTaskWithLock } from './taskSyncCoordinator';
@@ -135,14 +135,13 @@ export class EventListenerService {
       console.log(`[EventListener] Found ${taskCreatedEvents.length} TaskCreated events`);
 
       for (const event of taskCreatedEvents) {
-        const args = event.args;
-        if (args) {
-          await this.handleTaskCreated(
-            args.taskId.toString(),
-            args.creator,
-            args.taskURI
-          );
-        }
+        if (!('args' in event)) continue; // 收窄到 EventLog
+        const args = (event as EventLog).args;
+        await this.handleTaskCreated(
+          args.taskId.toString(),
+          args.creator,
+          args.taskURI
+        );
       }
 
       // 获取 TaskAccepted 事件
@@ -156,13 +155,12 @@ export class EventListenerService {
       console.log(`[EventListener] Found ${taskAcceptedEvents.length} TaskAccepted events`);
 
       for (const event of taskAcceptedEvents) {
-        const args = event.args;
-        if (args) {
-          await this.handleTaskAccepted(
-            args.taskId.toString(),
-            args.helper
-          );
-        }
+        if (!('args' in event)) continue; // 收窄到 EventLog
+        const args = (event as EventLog).args;
+        await this.handleTaskAccepted(
+          args.taskId.toString(),
+          args.helper
+        );
       }
 
       console.log('[EventListener] ✅ Historical events synced successfully');
