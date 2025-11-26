@@ -13,7 +13,7 @@ export function ToastContainer() {
       setToasts(ToastManager.getAll());
     });
 
-    return unsubscribe;
+    return () => { unsubscribe(); };
   }, []);
 
   return (

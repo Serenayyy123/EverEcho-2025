@@ -13,7 +13,7 @@ export function WalletConnector() {
         <h3 style={styles.title}>Connect Wallet</h3>
         {error && <p style={styles.error}>{error}</p>}
         <button
-          onClick={connect}
+          onClick={() => connect()}
           disabled={isConnecting}
           style={styles.connectButton}
         >

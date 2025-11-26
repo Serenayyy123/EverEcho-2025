@@ -16,7 +16,7 @@ export function useContacts(
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const canViewContacts = (task: Task | null) => {
+  const _canViewContacts = (task: Task | null) => {
     if (!task || !address) return false;
     
     // 只有 InProgress/Submitted/Completed 状态可以查看
@@ -71,7 +71,7 @@ export function useContacts(
       // 1. 使用私钥解包 wrappedDEK 得到 DEK
       // 2. 使用 DEK 解密 encryptedContacts
       
-      const decryptedContacts = response.contacts || response.wrappedDEK; // 优先使用 contacts 字段
+      const decryptedContacts = response.contactsEncryptedPayload || response.wrappedDEK;
       
       setContacts(decryptedContacts);
       setLoading(false);
