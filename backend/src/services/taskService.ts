@@ -33,7 +33,9 @@ export async function upsertTask(
 
   // 幂等性：使用 upsert，同一 taskId 覆盖旧数据
   const task = await prisma.task.upsert({
-    where: { taskId },
+    where: {
+      chainId_taskId: { chainId: CURRENT_CHAIN_ID, taskId }
+    },
     update: {
       title,
       description,
@@ -44,6 +46,7 @@ export async function upsertTask(
       creator: creator || undefined,
     },
     create: {
+      chainId: CURRENT_CHAIN_ID,
       taskId,
       title,
       description,

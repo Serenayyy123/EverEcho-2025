@@ -17,6 +17,8 @@ export interface TaskOutput {
   description: string;
   contactsEncryptedPayload: string;
   createdAt: number; // uint256 as number
+  category?: string;
+  creator?: string;
 }
 
 /**
