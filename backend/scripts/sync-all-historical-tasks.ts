@@ -78,31 +78,42 @@ async function main() {
 
       console.log(`  📥 Fetching metadata from: ${taskURI}`);
 
-      // 获取 metadata
-      const response = await fetch(taskURI);
-      if (!response.ok) {
-        console.log(`  ❌ Failed to fetch metadata: HTTP ${response.status}`);
-        failed++;
-        continue;
+      // 获取 metadata（如果失败则使用默认值）
+      let metadata: any = null;
+      try {
+        const response = await fetch(taskURI);
+        if (response.ok) {
+          metadata = await response.json();
+        } else {
+          console.log(`  ⚠️  Failed to fetch metadata: HTTP ${response.status}, using defaults`);
+        }
+      } catch (fetchError: any) {
+        console.log(`  ⚠️  Failed to fetch metadata: ${fetchError.message}, using defaults`);
       }
 
-      const metadata = await response.json();
+      // 使用 metadata 或默认值
+      const title = metadata?.title || `Task ${i} (synced from chain)`;
+      const description = metadata?.description || 'This task was automatically synced from blockchain';
+      const contactsEncryptedPayload = metadata?.contactsEncryptedPayload || '';
+      const createdAt = String(metadata?.createdAt || Math.floor(Date.now() / 1000));
+      const category = metadata?.category || null;
+      const creator = metadata?.creator || taskData[1]; // 使用链上的 creator 地址
 
       // 写入数据库
       await prisma.task.create({
         data: {
           chainId,
           taskId: String(i),
-          title: metadata.title || 'Untitled',
-          description: metadata.description || '',
-          contactsEncryptedPayload: metadata.contactsEncryptedPayload || '',
-          createdAt: String(metadata.createdAt || Math.floor(Date.now() / 1000)),
-          category: metadata.category || null,
-          creator: metadata.creator || null,
+          title,
+          description,
+          contactsEncryptedPayload,
+          createdAt,
+          category,
+          creator,
         },
       });
 
-      console.log(`  ✅ Synced: ${metadata.title}`);
+      console.log(`  ✅ Synced: ${title}`);
       synced++;
     } catch (error: any) {
       console.error(`  ❌ Error: ${error.message}`);
