@@ -11,7 +11,8 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
     "test": "jest --coverage",
-    "resync:metadata": "npx tsx scripts/resync-all-metadata.ts"
+    "resync:metadata": "npx tsx scripts/resync-all-metadata.ts",
+    "sync:profiles": "npx tsx scripts/sync-all-historical-profiles.ts"
   },
   "keywords": ["everecho", "web3", "profile"],
   "author": "",
