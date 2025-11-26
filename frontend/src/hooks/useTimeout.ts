@@ -10,11 +10,13 @@ const TIME_CONSTANTS = {
   T_FIX_EXTENSION: 3 * 24 * 60 * 60, // 3 days
 };
 
+type TimeoutTask = Pick<Task, 'status' | 'createdAt' | 'acceptedAt' | 'submittedAt' | 'fixRequested'>;
+
 /**
  * 真实超时计算 Hook
  * 基于链上时间戳计算
  */
-export function useTimeout(task: Task | null) {
+export function useTimeout(task: TimeoutTask | null) {
   const [timeLeft, setTimeLeft] = useState<number>(0);
   const [isTimeout, setIsTimeout] = useState(false);
   const [timeoutType, setTimeoutType] = useState<string | null>(null);

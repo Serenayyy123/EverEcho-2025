@@ -20,7 +20,7 @@ export function useWallet() {
   const [balance, setBalance] = useState<string>('0');
   
   // 从 localStorage 读取断开状态
-  const [manuallyDisconnected, setManuallyDisconnected] = useState(() => {
+  const [_manuallyDisconnected, setManuallyDisconnected] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('wallet_manually_disconnected') === 'true';
     }

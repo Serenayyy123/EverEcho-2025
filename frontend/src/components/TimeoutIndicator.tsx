@@ -54,7 +54,7 @@ export function TimeoutIndicator({
   });
 
   // 不显示倒计时的状态
-  if (!timeoutInfo.label || timeoutInfo.deadline === null) {
+  if (!timeoutInfo.timeoutType) {
     return null;
   }
 
@@ -130,15 +130,15 @@ export function TimeoutIndicator({
   return (
     <div style={styles.container}>
       <div style={styles.header}>
-        <span style={styles.label}>{timeoutInfo.label}:</span>
-        {!timeoutInfo.isExpired ? (
-          <span style={styles.countdown}>{formatCountdown(timeoutInfo.remainingMs)}</span>
+        <span style={styles.label}>{timeoutInfo.timeoutType}:</span>
+        {!timeoutInfo.isTimeout ? (
+          <span style={styles.countdown}>{timeoutInfo.formatTimeLeft()}</span>
         ) : (
           <span style={styles.expired}>Expired</span>
         )}
       </div>
 
-      {timeoutInfo.isExpired && canTriggerTimeout() && (
+      {timeoutInfo.isTimeout && canTriggerTimeout() && (
         <div style={styles.actionSection}>
           <button
             onClick={handleTimeout}
@@ -167,7 +167,7 @@ export function TimeoutIndicator({
         </div>
       )}
 
-      {timeoutInfo.isExpired && !canTriggerTimeout() && address && (
+      {timeoutInfo.isTimeout && !canTriggerTimeout() && address && (
         <div style={styles.infoBox}>
           <p style={styles.infoText}>
             Task has expired. Waiting for{' '}
