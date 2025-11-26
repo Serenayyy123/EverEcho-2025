@@ -9,6 +9,7 @@ import contactsRoutes from './routes/contacts';
 import healthzRoutes from './routes/healthz';
 import { initEventListenerService } from './services/eventListenerService';
 import { initChainSyncService } from './services/chainSyncService';
+import { getTask } from './services/taskService';
 
 /**
  * 启动前验证 - 确保链配置正确
@@ -112,6 +113,28 @@ app.use('/api/profile', profileRoutes);
 app.use('/api/task', taskRoutes);
 app.use('/api/contacts', contactsRoutes);
 app.use('/healthz', healthzRoutes);
+
+// 兼容链上 taskURI: /task/{id}.json
+app.get('/task/:taskId.json', async (req, res) => {
+  try {
+    const { taskId } = req.params;
+    
+    if (!taskId || taskId.trim() === '') {
+      return res.status(400).json({ error: 'Invalid taskId' });
+    }
+
+    const task = await getTask(taskId);
+
+    if (!task) {
+      return res.status(404).json({ error: 'Task not found' });
+    }
+
+    return res.status(200).json(task);
+  } catch (err) {
+    console.error('[AliasRoute] Failed to serve /task/:taskId.json', err);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 // Root route
 app.get('/', (req, res) => {
