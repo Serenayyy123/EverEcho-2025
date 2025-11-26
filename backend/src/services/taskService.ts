@@ -97,6 +97,8 @@ export async function getTask(taskId: string): Promise<TaskOutput | null> {
 export function generateTaskURI(taskId: string): string {
   // 冻结点 2.2-P0-B2：URI 格式固定
   // 支持 staging/production 环境切换
-  const baseUrl = process.env.BACKEND_PUBLIC_URL || 'https://api.everecho.io';
+  const baseUrl =
+    process.env.BACKEND_PUBLIC_URL?.replace(/\/$/, '') ||
+    'https://api.everecho.io';
   return `${baseUrl}/task/${taskId}.json`;
 }
