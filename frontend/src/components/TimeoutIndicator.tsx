@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { TaskStatus } from '../types/task';
 import { useTimeout } from '../hooks/useTimeout';
-import { formatCountdown } from '../utils/time';
 import { Contract, ethers } from 'ethers';
 import { TASK_ESCROW_ADDRESS } from '../contracts/addresses';
 import TaskEscrowABI from '../contracts/TaskEscrow.json';

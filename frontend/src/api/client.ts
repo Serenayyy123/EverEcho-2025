@@ -66,7 +66,8 @@ export interface ContactsDecryptRequest {
 
 export interface ContactsDecryptResponse {
   wrappedDEK: string;
-  encryptedContacts: string;
+  senderPublicKey: string;
+  contactsEncryptedPayload: string;
 }
 
 class APIClient {
