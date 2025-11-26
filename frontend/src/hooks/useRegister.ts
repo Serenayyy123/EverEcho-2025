@@ -48,7 +48,7 @@ export function useRegister(
         EOCHOTokenABI.abi,
         signer
       );
-      const balanceBefore = await tokenContract.balanceOf(userAddress);
+      const balanceBefore: bigint = await tokenContract.balanceOf(userAddress);
       console.log('Balance before registration:', ethers.formatEther(balanceBefore));
 
       // Step 1: 上传 profile 到后端，获取 profileURI
@@ -77,8 +77,8 @@ export function useRegister(
       console.log('Transaction confirmed:', receipt.hash);
 
       // Step 3: 检查注册后余额变化（冻结点 1.2-8）
-      const balanceAfter = await tokenContract.balanceOf(userAddress);
-      const mintedAmount: bigint = balanceAfter - balanceBefore;
+      const balanceAfter: bigint = await tokenContract.balanceOf(userAddress);
+      const mintedAmount = balanceAfter - balanceBefore;
       const mintedAmountFormatted = ethers.formatEther(mintedAmount);
       
       console.log('Balance after registration:', ethers.formatEther(balanceAfter));
