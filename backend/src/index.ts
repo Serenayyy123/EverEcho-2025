@@ -36,6 +36,10 @@ async function validateEnvironment() {
     // 3. 验证 chainId 与 RPC 一致
     await validateChainId(provider);
     
+    // 4. 打印 taskURI 基础 URL（用于确认 staging/production 配置）
+    const backendPublicUrl = process.env.BACKEND_PUBLIC_URL || 'https://api.everecho.io';
+    console.log(`🌐 Task URI Base: ${backendPublicUrl}`);
+    
     console.log('✅ Environment validation passed');
     console.log('='.repeat(60));
   } catch (error: any) {
