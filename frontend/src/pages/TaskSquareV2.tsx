@@ -13,6 +13,7 @@ import { getCategoryLabel } from '../types/category';
  */
 
 export function TaskSquareV2() {
+  console.log('🎨 TaskSquareV2 LOADED - Category Theme Cards Active');
   const navigate = useNavigate();
   const { address, chainId, provider } = useWallet();
   const { tasks, loading, error, refresh } = useTasks(provider, chainId);
