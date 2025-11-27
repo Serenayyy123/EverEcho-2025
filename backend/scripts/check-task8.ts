@@ -1,43 +1,43 @@
-/**
- * 检查 Task 8 的状态
- */
-
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
 async function checkTask8() {
   try {
-    console.log('\n🔍 Checking Task 8 status...\n');
-
-    // 检查 Task
-    const task = await prisma.task.findUnique({
-      where: { taskId: '8' },
+    const task = await prisma.task.findFirst({
+      where: {
+        taskId: '8',
+        chainId: '84532'
+      }
     });
 
+    console.log('\n=== Task 8 in Database ===');
     if (task) {
-      console.log('✅ Task 8 exists:');
-      console.log(`   Title: ${task.title}`);
-      console.log(`   Description: ${task.description.substring(0, 50)}...`);
-      console.log(`   Contacts (plaintext): ${task.contactsPlaintext}`);
+      console.log('Found Task 8:');
+      console.log('  taskId:', task.taskId);
+      console.log('  chainId:', task.chainId);
+      console.log('  title:', task.title);
+      console.log('  description:', task.description);
+      console.log('  category:', task.category);
+      console.log('  creator:', task.creator);
+      console.log('  createdAt:', task.createdAt);
+      console.log('  contactsPlaintext:', task.contactsPlaintext ? 'Yes' : 'No');
     } else {
-      console.log('❌ Task 8 NOT found in database');
+      console.log('❌ Task 8 NOT FOUND in database');
     }
 
-    // 检查 ContactKey
-    const contactKey = await prisma.contactKey.findUnique({
-      where: { taskId: '8' },
+    // 检查所有任务
+    const allTasks = await prisma.task.findMany({
+      where: { chainId: '84532' },
+      orderBy: { taskId: 'asc' }
     });
 
-    if (contactKey) {
-      console.log('\n✅ ContactKey exists:');
-      console.log(`   creatorWrappedDEK: ${contactKey.creatorWrappedDEK.substring(0, 30)}...`);
-      console.log(`   helperWrappedDEK: ${contactKey.helperWrappedDEK ? contactKey.helperWrappedDEK.substring(0, 30) + '...' : 'N/A'}`);
-    } else {
-      console.log('\n❌ ContactKey NOT found for Task 8');
-    }
+    console.log('\n=== All Tasks in Database ===');
+    console.log(`Total: ${allTasks.length} tasks`);
+    allTasks.forEach(t => {
+      console.log(`  Task ${t.taskId}: ${t.title || 'No title'}`);
+    });
 
-    console.log('\n');
   } catch (error) {
     console.error('Error:', error);
   } finally {

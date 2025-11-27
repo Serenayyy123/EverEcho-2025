@@ -1,12 +1,8 @@
-import { useEffect, useState, lazy, Suspense } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useWallet } from '../hooks/useWallet';
 import { motion } from 'framer-motion';
-
-// 懒加载 Three.js 组件
-const ParticleHero = lazy(() => 
-  import('../components/landing/ParticleHero').then(module => ({ default: module.ParticleHero }))
-);
+import { ParticleHeroCss } from '../components/landing/ParticleHero.css';
 
 /**
  * Landing 页面 V2 - Three.js 粒子动画版本
@@ -40,10 +36,8 @@ export function LandingV2() {
 
   return (
     <div style={styles.container}>
-      {/* Three.js 粒子背景 */}
-      <Suspense fallback={null}>
-        <ParticleHero />
-      </Suspense>
+      {/* CSS 粒子背景 */}
+      <ParticleHeroCss />
 
       {/* 内容层 */}
       <div style={styles.contentLayer}>
