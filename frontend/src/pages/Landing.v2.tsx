@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useWallet } from '../hooks/useWallet';
 import { motion } from 'framer-motion';
-import { ParticleHeroCss } from '../components/landing/ParticleHero.css';
+import { ParticlePlanet } from '../components/landing/ParticlePlanet';
 
 /**
  * Landing 页面 V2 - Three.js 粒子动画版本
@@ -26,26 +26,26 @@ export function LandingV2() {
     }
   }, [address, isRegistered, isCheckingRegistration, navigate]);
 
-  // 标题滑入时机：4秒后
+  // 标题滑入时机：5秒后（等待粒子散开）
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowContent(true);
-    }, 4000);
+    }, 5000);
     return () => clearTimeout(timer);
   }, []);
 
   return (
     <div style={styles.container}>
-      {/* CSS 粒子背景 */}
-      <ParticleHeroCss />
+      {/* 粒子行星动画 */}
+      <ParticlePlanet />
 
       {/* 内容层 */}
       <div style={styles.contentLayer}>
-        {/* 标题 - 4秒后滑入 */}
+        {/* 标题 - 5秒后慢滑入 */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={showContent ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
           style={styles.titleContainer}
         >
           <h1 style={styles.title}>EverEcho</h1>
