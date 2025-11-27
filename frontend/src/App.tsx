@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Home } from './pages/Home';
-import { HomeV2 } from './pages/Home.v2';
+import { LandingV2 } from './pages/Landing.v2';
 import { Register } from './pages/Register';
 import { TaskSquare } from './pages/TaskSquare';
 import { TaskSquareV2 } from './pages/TaskSquare.v2';
@@ -24,7 +24,7 @@ const isUIV2 = import.meta.env.VITE_UI_V2 === 'true';
 
 function App() {
   // 根据环境变量选择组件
-  const HomeComponent = isUIV2 ? HomeV2 : Home;
+  const HomeComponent = isUIV2 ? LandingV2 : Home;
   const TaskSquareComponent = isUIV2 ? TaskSquareV2 : TaskSquare;
   
   return (
