@@ -199,9 +199,6 @@ const styles: Record<string, React.CSSProperties> = {
     position: 'relative',
     width: '360px',
     height: '480px',
-    transformStyle: 'preserve-3d',
-    perspective: '1800px', // 增强透视效果
-    perspectiveOrigin: '50% 50%',
   },
   indicators: {
     position: 'absolute',

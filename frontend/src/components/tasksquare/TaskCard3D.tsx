@@ -17,13 +17,11 @@ export function TaskCard3D({ task, index, activeIndex, totalCards }: TaskCard3DP
   const offset = index - activeIndex;
   const absOffset = Math.abs(offset);
   
-  // 计算卡片位置和样式 - 增强 3D 效果
+  // 2D 横向滑动 - 中心最大最亮，两侧缩小变暗
   const isActive = offset === 0;
-  const scale = isActive ? 1 : Math.max(0.5, 1 - absOffset * 0.2);
-  const opacity = Math.max(0.2, 1 - absOffset * 0.4);
-  const translateX = offset * 420; // 增加间距
-  const translateZ = isActive ? 0 : -absOffset * 200; // 增强深度
-  const rotateY = offset * 15; // 增强旋转角度
+  const scale = isActive ? 1 : 0.85;
+  const opacity = isActive ? 1 : 0.5;
+  const translateX = offset * 400;
   
   const getStatusLabel = (status: number) => {
     const labels: Record<number, string> = {
@@ -54,7 +52,7 @@ export function TaskCard3D({ task, index, activeIndex, totalCards }: TaskCard3DP
     <div
       style={{
         ...styles.cardWrapper,
-        transform: `translateX(${translateX}px) translateZ(${translateZ}px) rotateY(${rotateY}deg) scale(${scale})`,
+        transform: `translateX(${translateX}px) scale(${scale})`,
         opacity,
         zIndex: totalCards - absOffset,
         pointerEvents: isActive ? 'auto' : 'none',
@@ -65,9 +63,9 @@ export function TaskCard3D({ task, index, activeIndex, totalCards }: TaskCard3DP
         style={{
           ...styles.card,
           boxShadow: isActive
-            ? `0 0 80px ${theme.glow}, 0 30px 80px rgba(0,0,0,0.9), inset 0 0 40px ${theme.glow}`
+            ? `0 0 60px ${theme.glow}, 0 20px 60px rgba(0,0,0,0.8)`
             : '0 10px 40px rgba(0,0,0,0.6)',
-          filter: isActive ? 'brightness(1.1)' : 'brightness(0.7)',
+          filter: isActive ? 'brightness(1.1)' : 'brightness(0.6)',
         }}
       >
         {/* Category Tag */}
@@ -146,9 +144,8 @@ const styles: Record<string, React.CSSProperties> = {
     position: 'absolute',
     width: '360px',
     height: '480px',
-    transition: 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1)', // 更流畅的过渡
+    transition: 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
     cursor: 'pointer',
-    transformStyle: 'preserve-3d', // 保持 3D 变换
   },
   card: {
     width: '100%',
