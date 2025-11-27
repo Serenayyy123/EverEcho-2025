@@ -4,12 +4,16 @@ import { useWallet } from '../hooks/useWallet';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Alert } from '../components/ui/Alert';
+import { HomeParticles } from '../components/home/HomeParticles';
 
 /**
  * 首页 - 钱包连接
  * 冻结点 2.2-P0-F1：连接钱包 → 检查 isRegistered
  * 冻结点 1.1-4：注册状态来源唯一 - 只使用 useWallet 提供的 isRegistered
  */
+
+// 粒子动画开关
+const enableParticles = import.meta.env.VITE_ENABLE_HOME_PARTICLES !== 'false';
 
 export function Home() {
   const navigate = useNavigate();
@@ -42,7 +46,9 @@ export function Home() {
 
   return (
     <div style={styles.container}>
-      <Card padding="lg">
+      {enableParticles && <HomeParticles />}
+      <div style={{ position: 'relative', zIndex: 1 }}>
+        <Card padding="lg">
         <div style={styles.content}>
           <div style={styles.logo}>
             <span style={styles.logoIcon}>🔊</span>
@@ -88,6 +94,7 @@ export function Home() {
           )}
         </div>
       </Card>
+      </div>
     </div>
   );
 }
@@ -98,8 +105,11 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#f9fafb',
+    background: enableParticles 
+      ? 'radial-gradient(ellipse at 50% 30%, rgba(10, 15, 35, 0.95) 0%, transparent 70%), linear-gradient(180deg, #050810 0%, #0A0C15 100%)'
+      : '#f9fafb',
     padding: '20px',
+    position: 'relative',
   },
   content: {
     maxWidth: '500px',
