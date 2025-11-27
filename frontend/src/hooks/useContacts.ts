@@ -50,12 +50,11 @@ export function useContacts(
       });
 
       // Step 4: 使用后端返回的明文联系方式（MVP 简化方案）
-      // 注意：生产环境应该在前端解密 wrappedDEK
-      // 实际实现中需要：
-      // 1. 使用私钥解包 wrappedDEK 得到 DEK
-      // 2. 使用 DEK 解密 encryptedContacts
+      // 后端返回的 response.contacts 应该是明文
+      console.log('[useContacts] Response:', response);
       
-      const decryptedContacts = response.contactsEncryptedPayload || response.wrappedDEK;
+      const decryptedContacts = response.contacts || response.contactsEncryptedPayload || response.wrappedDEK;
+      console.log('[useContacts] Decrypted contacts:', decryptedContacts);
       
       setContacts(decryptedContacts);
       setLoading(false);
