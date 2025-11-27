@@ -9,15 +9,15 @@ import * as THREE from 'three';
 
 // ============ 可调参数 ============
 const PETAL_COUNT = 8;                    // 花瓣数量（6-12）
-const CORE_PARTICLES = 300;               // 花芯粒子数
-const PETAL_PARTICLES = 800;              // 花瓣粒子数
-const DUST_PARTICLES = 150;               // 背景星尘数
-const BLOOM_INTENSITY = 1.5;              // 光晕强度（1.0-2.5）
-const EXPLODE_SPIRAL = 1.2;               // 爆散螺旋强度（0.5-2.0）
+const CORE_PARTICLES = 400;               // 花芯粒子数（增加密度）
+const PETAL_PARTICLES = 1200;             // 花瓣粒子数（增加密度）
+const DUST_PARTICLES = 200;               // 背景星尘数
+const BLOOM_INTENSITY = 2.2;              // 光晕强度（增强发光）
+const EXPLODE_SPIRAL = 1.6;               // 爆散螺旋强度（增强螺旋）
 
 const DURATION_GATHER = 2500;             // 聚合时长(ms)
 const DURATION_BREATHE = 500;             // 呼吸时长(ms)
-const DURATION_PULSE = 200;               // 能量脉冲时长(ms)
+const DURATION_PULSE = 300;               // 能量脉冲时长(ms)（延长）
 const DURATION_BURST = 2300;              // 爆散时长(ms)
 const DURATION_WAIT = 1500;               // 等待时长(ms)
 // ==================================
@@ -116,11 +116,11 @@ export function HomeParticles({ config = DEFAULT_CONFIG }: { config?: Partial<Pa
       const burstVel = burstDir.multiplyScalar(1.5 + Math.random() * 1);
       const tangentVel = new THREE.Vector3();
 
-      // Core colors: bright cyan-green to blue
+      // Core colors: bright cyan-green to blue (增强亮度和饱和度)
       const coreHue = 0.15 + Math.random() * 0.15; // cyan-green
-      const color = new THREE.Color().setHSL(coreHue, 0.7 + Math.random() * 0.2, 0.6 + Math.random() * 0.2);
+      const color = new THREE.Color().setHSL(coreHue, 0.9, 0.7 + Math.random() * 0.2); // 高饱和度，高亮度
 
-      const size = 0.06 + Math.random() * 0.04;
+      const size = 0.12 + Math.random() * 0.08; // 增大花芯粒子
 
       particles.push({ startPos, targetPos, burstVel, tangentVel, color, type: 'core', size });
     }
@@ -161,17 +161,17 @@ export function HomeParticles({ config = DEFAULT_CONFIG }: { config?: Partial<Pa
 
         // Petal colors: gradient from cyan-green (inner) to blue-purple (outer) with gold accents
         let color: THREE.Color;
-        if (Math.random() < 0.08) {
-          // Gold accent particles (8%)
-          color = new THREE.Color(0.9, 0.7, 0.3);
+        if (Math.random() < 0.12) {
+          // Gold accent particles (12% - 增加金色比例)
+          color = new THREE.Color(1.0, 0.8, 0.4); // 更亮的金色
         } else {
           const hue = 0.5 + t * 0.15 + Math.random() * 0.05; // cyan to blue-purple
-          const sat = 0.6 + Math.random() * 0.3;
-          const light = 0.5 + (1 - t) * 0.2 + Math.random() * 0.1;
+          const sat = 0.85 + Math.random() * 0.15; // 增强饱和度
+          const light = 0.6 + (1 - t) * 0.2 + Math.random() * 0.1; // 增强亮度
           color = new THREE.Color().setHSL(hue, sat, light);
         }
 
-        const size = 0.04 + Math.random() * 0.03;
+        const size = 0.08 + Math.random() * 0.06; // 增大花瓣粒子
 
         particles.push({ 
           startPos, 
@@ -204,7 +204,7 @@ export function HomeParticles({ config = DEFAULT_CONFIG }: { config?: Partial<Pa
       // Dust colors: very faint white-blue
       const color = new THREE.Color(0.6 + Math.random() * 0.3, 0.6 + Math.random() * 0.3, 0.7 + Math.random() * 0.3);
 
-      const size = 0.02 + Math.random() * 0.02;
+      const size = 0.04 + Math.random() * 0.03; // 增大星尘粒子
 
       particles.push({ startPos, targetPos, burstVel, tangentVel, color, type: 'dust', size });
     }
