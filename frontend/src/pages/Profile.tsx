@@ -27,8 +27,8 @@ import { generateEncryptionKeyPair, saveEncryptionPrivateKey } from '../utils/en
 
 type TabType = 'creator' | 'helper';
 
-// V2 实验功能：Profile 编辑
-const ENABLE_PROFILE_EDIT = import.meta.env.VITE_ENABLE_PROFILE_EDIT === 'true';
+// Profile 编辑功能（已启用）
+const ENABLE_PROFILE_EDIT = true;
 
 export function Profile() {
   const navigate = useNavigate();
