@@ -44,9 +44,13 @@ export function Home() {
     }
   }, [address, isRegistered, isCheckingRegistration, navigate]);
 
+  // Debug log
+  console.log('[Home] enableParticles:', enableParticles, 'env:', import.meta.env.VITE_ENABLE_HOME_PARTICLES);
+
   return (
     <div style={styles.container}>
       {enableParticles && <HomeParticles />}
+      {enableParticles && <div style={{ position: 'fixed', top: 10, left: 10, zIndex: 9999, background: 'red', color: 'white', padding: '5px' }}>粒子已启用</div>}
       <div style={{ position: 'relative', zIndex: 1 }}>
         <Card padding="lg">
         <div style={styles.content}>

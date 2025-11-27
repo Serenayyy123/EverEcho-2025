@@ -19,12 +19,15 @@ import { ToastContainer } from './components/ui/ToastContainer';
  * 
  * UI V2: 通过 VITE_UI_V2 环境变量切换新旧 UI
  * VITE_ENABLE_HOME_PARTICLES: 启用银河行星粒子动画（默认 true）
+ * VITE_UI_TASKSQUARE_V2: 启用 TaskSquare 3D 展厅风格（默认 false）
  */
 
 // UI V2 开关
 const isUIV2 = import.meta.env.VITE_UI_V2 === 'true';
 // 粒子动画开关（默认开启）
 const enableParticles = import.meta.env.VITE_ENABLE_HOME_PARTICLES !== 'false';
+// TaskSquare V2 开关（默认关闭）
+const isTaskSquareV2 = import.meta.env.VITE_UI_TASKSQUARE_V2 === 'true';
 
 function App() {
   // 根据环境变量选择组件
@@ -33,7 +36,7 @@ function App() {
     HomeComponent = enableParticles ? HomeGalaxy : LandingV2;
   }
   
-  const TaskSquareComponent = isUIV2 ? TaskSquareV2 : TaskSquare;
+  const TaskSquareComponent = isTaskSquareV2 ? TaskSquareV2 : (isUIV2 ? TaskSquareV2 : TaskSquare);
   
   return (
     <BrowserRouter>

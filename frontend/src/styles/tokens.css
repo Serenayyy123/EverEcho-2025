@@ -1,3 +1,6 @@
+/* Import fonts first (CSS requirement) */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
 /**
  * EverEcho UI V2 Design Tokens
  * Deep space / Quiet luxury / Soft glow / Glass & depth
@@ -120,11 +123,6 @@
   --dur-med: 280ms;
   --dur-slow: 600ms;
 }
-
-/* ========================================
-   Global Font Import
-   ======================================== */
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
 
 /* ========================================
    Keyframe Animations - Restrained

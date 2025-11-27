@@ -54,8 +54,15 @@ export function HomeParticles({ config = DEFAULT_CONFIG }: { config?: Partial<Pa
   const containerRef = useRef<HTMLDivElement>(null);
   const fullConfig = { ...DEFAULT_CONFIG, ...config };
 
+  console.log('[HomeParticles] Component mounted');
+
   useEffect(() => {
-    if (!containerRef.current) return;
+    console.log('[HomeParticles] useEffect running, containerRef:', containerRef.current);
+    if (!containerRef.current) {
+      console.log('[HomeParticles] No container ref, returning');
+      return;
+    }
+    console.log('[HomeParticles] Starting Three.js setup...');
 
     // Scene setup
     const scene = new THREE.Scene();
