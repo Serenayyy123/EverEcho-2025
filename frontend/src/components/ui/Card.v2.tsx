@@ -42,16 +42,6 @@ export function CardV2({
     ...style,
   };
 
-  const hoverStyles: React.CSSProperties = hover
-    ? {
-        ':hover': {
-          transform: 'translateY(-4px)',
-          boxShadow: glow ? themeV2.shadows.glowHover : themeV2.shadows.lg,
-          background: themeV2.bg.cardHover,
-        },
-      }
-    : {};
-
   const [isHovered, setIsHovered] = React.useState(false);
 
   const finalStyles: React.CSSProperties = {
@@ -60,7 +50,7 @@ export function CardV2({
       ? {
           transform: 'translateY(-4px)',
           boxShadow: glow ? themeV2.shadows.glowHover : themeV2.shadows.lg,
-          background: themeV2.bg.cardHover,
+          background: themeV2.colors.bg.cardHover,
         }
       : {}),
   };
