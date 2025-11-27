@@ -44,12 +44,28 @@ async function main() {
   const provider = new ethers.JsonRpcProvider(rpcUrl);
   const contract = new ethers.Contract(registerAddress, REGISTER_ABI, provider);
 
-  // 3. 查询历史事件
+  // 3. 查询历史事件（分批避免 RPC 限制）
   console.log('[SyncProfiles] 📡 Querying UserRegistered events...');
-  const filter = contract.filters.UserRegistered();
-  const events = await contract.queryFilter(filter, syncFromBlock, 'latest');
+  const currentBlock = await provider.getBlockNumber();
+  const BATCH_SIZE = 50000; // 安全的批次大小
   
-  console.log(`[SyncProfiles] 📊 Found ${events.length} registration events\n`);
+  let allEvents: any[] = [];
+  let fromBlock = syncFromBlock;
+  
+  while (fromBlock <= currentBlock) {
+    const toBlock = Math.min(fromBlock + BATCH_SIZE - 1, currentBlock);
+    console.log(`[SyncProfiles]   Querying blocks ${fromBlock} to ${toBlock}...`);
+    
+    const filter = contract.filters.UserRegistered();
+    const batchEvents = await contract.queryFilter(filter, fromBlock, toBlock);
+    allEvents = allEvents.concat(batchEvents);
+    
+    console.log(`[SyncProfiles]   Found ${batchEvents.length} events in this batch`);
+    fromBlock = toBlock + 1;
+  }
+  
+  const events = allEvents;
+  console.log(`[SyncProfiles] 📊 Total found: ${events.length} registration events\n`);
 
   if (events.length === 0) {
     console.log('[SyncProfiles] ✅ No profiles to sync');
