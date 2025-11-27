@@ -17,13 +17,13 @@ export function TaskCard3D({ task, index, activeIndex, totalCards }: TaskCard3DP
   const offset = index - activeIndex;
   const absOffset = Math.abs(offset);
   
-  // 计算卡片位置和样式
+  // 计算卡片位置和样式 - 增强 3D 效果
   const isActive = offset === 0;
-  const scale = isActive ? 1 : Math.max(0.7, 1 - absOffset * 0.15);
-  const opacity = Math.max(0.3, 1 - absOffset * 0.3);
-  const translateX = offset * 380;
-  const translateZ = isActive ? 0 : -absOffset * 100;
-  const rotateY = offset * 8;
+  const scale = isActive ? 1 : Math.max(0.5, 1 - absOffset * 0.2);
+  const opacity = Math.max(0.2, 1 - absOffset * 0.4);
+  const translateX = offset * 420; // 增加间距
+  const translateZ = isActive ? 0 : -absOffset * 200; // 增强深度
+  const rotateY = offset * 15; // 增强旋转角度
   
   const getStatusLabel = (status: number) => {
     const labels: Record<number, string> = {
@@ -65,8 +65,9 @@ export function TaskCard3D({ task, index, activeIndex, totalCards }: TaskCard3DP
         style={{
           ...styles.card,
           boxShadow: isActive
-            ? `0 0 60px ${theme.glow}, 0 20px 60px rgba(0,0,0,0.8)`
+            ? `0 0 80px ${theme.glow}, 0 30px 80px rgba(0,0,0,0.9), inset 0 0 40px ${theme.glow}`
             : '0 10px 40px rgba(0,0,0,0.6)',
+          filter: isActive ? 'brightness(1.1)' : 'brightness(0.7)',
         }}
       >
         {/* Category Tag */}
@@ -145,8 +146,9 @@ const styles: Record<string, React.CSSProperties> = {
     position: 'absolute',
     width: '360px',
     height: '480px',
-    transition: 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
+    transition: 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1)', // 更流畅的过渡
     cursor: 'pointer',
+    transformStyle: 'preserve-3d', // 保持 3D 变换
   },
   card: {
     width: '100%',
