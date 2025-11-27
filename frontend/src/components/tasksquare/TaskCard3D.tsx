@@ -14,6 +14,15 @@ export function TaskCard3D({ task, index, activeIndex, totalCards }: TaskCard3DP
   const navigate = useNavigate();
   const theme = getCategoryFullTheme(task.metadata?.category);
   
+  // Debug: 打印任务和主题信息
+  if (index === activeIndex) {
+    console.log('🎨 Active Card:', {
+      taskId: task.taskId,
+      category: task.metadata?.category,
+      theme: theme,
+    });
+  }
+  
   const offset = index - activeIndex;
   const absOffset = Math.abs(offset);
   
