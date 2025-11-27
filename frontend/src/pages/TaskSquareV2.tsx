@@ -108,7 +108,7 @@ export function TaskSquareV2() {
   }
 
   return (
-    <PageLayout title="" showNav={true}>
+    <PageLayout title="" showNav={true} maxWidth="xl">
       <div style={styles.container}>
         {/* Header */}
         <div style={styles.header}>
@@ -183,8 +183,12 @@ const styles: Record<string, React.CSSProperties> = {
     `,
     padding: '40px 24px',
     position: 'relative',
-    width: '100%',
+    width: 'calc(100vw - 48px)',
     maxWidth: 'none',
+    marginLeft: 'calc(-50vw + 50%)',
+    marginRight: 'calc(-50vw + 50%)',
+    left: '50%',
+    right: '50%',
   },
   header: {
     width: '100%',
