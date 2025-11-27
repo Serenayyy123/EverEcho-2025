@@ -15,6 +15,7 @@ import { Alert } from '../components/ui/Alert';
 import { NetworkGuard } from '../components/ui/NetworkGuard';
 import { Input } from '../components/ui/Input';
 import { apiClient } from '../api/client';
+import { generateEncryptionKeyPair, saveEncryptionPrivateKey } from '../utils/encryption';
 
 /**
  * Profile 页面（P0-F3）
@@ -36,6 +37,10 @@ export function Profile() {
   
   const [activeTab, setActiveTab] = useState<TabType>('creator');
   const [seedLoading, setSeedLoading] = useState(false);
+  
+  // 链下恢复状态
+  const [restoreLoading, setRestoreLoading] = useState(false);
+  const [restoreError, setRestoreError] = useState<string | null>(null);
   
   // 编辑模式状态
   const [isEditing, setIsEditing] = useState(false);
@@ -60,6 +65,47 @@ export function Profile() {
     provider,
     address ? { role: activeTab, address } : null
   );
+
+  // 链下恢复 Profile（历史用户专用）
+  const handleRestoreOffchain = async () => {
+    if (!address || !profile) return;
+    
+    setRestoreLoading(true);
+    setRestoreError(null);
+    
+    try {
+      // 1. 生成新的加密密钥对（不触发链上交易）
+      const { publicKey, privateKey } = generateEncryptionKeyPair();
+      
+      // 2. 保存私钥到 localStorage
+      saveEncryptionPrivateKey(address, privateKey);
+      
+      // 3. 准备 profile 数据（清理占位符）
+      const nickname = profile.nickname.includes('(synced from chain)') 
+        ? 'User' 
+        : profile.nickname;
+      
+      // 4. 只调用 backend API，不触发链上交易
+      await apiClient.createProfile({
+        address,
+        nickname,
+        city: profile.city || '',
+        skills: profile.skills || [],
+        contacts: profile.contacts || undefined,
+        encryptionPubKey: publicKey,
+      });
+      
+      alert('Profile restored off-chain successfully! No tokens minted. Your encryption key has been saved locally.');
+      
+      // 5. 刷新页面以显示更新后的 profile
+      window.location.reload();
+    } catch (e) {
+      console.error('Restore failed:', e);
+      setRestoreError(e instanceof Error ? e.message : 'Failed to restore profile');
+    } finally {
+      setRestoreLoading(false);
+    }
+  };
 
   // Demo Seed 工具（仅开发环境）
   const handleDemoSeed = async () => {
@@ -267,17 +313,32 @@ export function Profile() {
                       <Alert variant="warning" title="Profile incomplete (historical user)">
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                           <p style={{ margin: 0 }}>
-                            Your profile was synced from an old on-chain record. You are already registered on-chain, 
-                            but your encryption key was not recovered from the historical profileURI.
+                            This is a historical on-chain account. The old profileURI is unreachable, 
+                            so your encryption key and off-chain profile were not recovered.
                           </p>
                           <p style={{ margin: 0 }}>
-                            <strong>Impact:</strong> ContactKey sync will fail for tasks you create, and Helpers may not 
-                            be able to see your contact information.
+                            <strong>Impact:</strong> Tasks from this address cannot create ContactKey, and Helpers won't see your contacts.
                           </p>
                           <p style={{ margin: 0 }}>
-                            <strong>Note:</strong> You cannot re-register (already registered on-chain). A profile update 
-                            feature will be available in a future release.
+                            <strong>Fix:</strong> Restore your profile off-chain to regenerate your encryption key. This will NOT mint tokens or trigger any on-chain transactions.
                           </p>
+                          
+                          {restoreError && (
+                            <p style={{ margin: 0, color: '#b91c1c', fontSize: 12 }}>
+                              Error: {restoreError}
+                            </p>
+                          )}
+                          
+                          <div style={{ marginTop: 8 }}>
+                            <Button
+                              variant="primary"
+                              onClick={handleRestoreOffchain}
+                              loading={restoreLoading}
+                              disabled={restoreLoading}
+                            >
+                              Restore profile (off-chain)
+                            </Button>
+                          </div>
                         </div>
                       </Alert>
                     </div>
