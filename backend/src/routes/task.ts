@@ -351,11 +351,11 @@ router.get('/:taskId', async (req: Request, res: Response) => {
         provider
       );
 
-      // 设置 2 秒超时
+      // 设置 10 秒超时（Alchemy 免费套餐可能较慢）
       const taskOnChain = await Promise.race([
         contract.tasks(taskId),
         new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('RPC timeout')), 2000)
+          setTimeout(() => reject(new Error('RPC timeout')), 10000)
         ),
       ]);
       
