@@ -12,7 +12,8 @@
     "prisma:studio": "prisma studio",
     "test": "jest --coverage",
     "resync:metadata": "npx tsx scripts/resync-all-metadata.ts",
-    "sync:profiles": "npx tsx scripts/sync-all-historical-profiles.ts"
+    "sync:profiles": "npx tsx scripts/sync-all-historical-profiles.ts",
+    "check:profiles": "npx tsx scripts/check-all-profiles-status.ts"
   },
   "keywords": ["everecho", "web3", "profile"],
   "author": "",
