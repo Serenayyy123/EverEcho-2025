@@ -194,10 +194,43 @@ router.post('/decrypt', async (req: Request, res: Response) => {
     console.log('[/decrypt] Contacts length:', task.contactsPlaintext.length);
     console.log('[/decrypt] Contacts looks like hex:', /^[0-9a-f]+$/i.test(task.contactsPlaintext));
     
-    // 8. 返回明文联系方式（MVP 简化方案）
+    // 8. 检查 contactsPlaintext 是否是加密数据（回退逻辑）
+    let plaintext = task.contactsPlaintext;
+    
+    // 如果 contactsPlaintext 看起来像加密数据（长hex字符串），尝试从 Profile 获取原始明文
+    if (/^[0-9a-f]{64,}$/i.test(plaintext)) {
+      console.log('[/decrypt] contactsPlaintext appears to be encrypted, fetching from creator profile...');
+      
+      // 从任务获取创建者地址
+      const taskWithCreator = await prisma.task.findUnique({
+        where: {
+          chainId_taskId: { chainId: CURRENT_CHAIN_ID, taskId }
+        },
+        select: { creator: true },
+      });
+      
+      if (taskWithCreator?.creator) {
+        // 从创建者的 Profile 获取明文联系方式
+        const creatorProfile = await prisma.profile.findUnique({
+          where: { address: taskWithCreator.creator },
+          select: { contacts: true },
+        });
+        
+        if (creatorProfile?.contacts) {
+          plaintext = creatorProfile.contacts;
+          console.log('[/decrypt] Using contacts from creator profile:', plaintext);
+        } else {
+          console.log('[/decrypt] Creator profile contacts not found');
+        }
+      } else {
+        console.log('[/decrypt] Task creator not found');
+      }
+    }
+    
+    // 9. 返回明文联系方式
     res.status(200).json({
       success: true,
-      contacts: task.contactsPlaintext,
+      contacts: plaintext,
       wrappedDEK, // 保留 wrappedDEK 用于未来的完整实现
     });
   } catch (error) {
