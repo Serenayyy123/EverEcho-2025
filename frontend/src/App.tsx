@@ -4,7 +4,7 @@ import { LandingV2 } from './pages/Landing.v2';
 import { HomeGalaxy } from './pages/Home.galaxy';
 import { Register } from './pages/Register';
 import { TaskSquare } from './pages/TaskSquare';
-import { TaskSquareV2 } from './pages/TaskSquare.v2';
+import { TaskSquareV2 } from './pages/TaskSquareV2';
 import { TaskDetail } from './pages/TaskDetail';
 import { Profile } from './pages/Profile';
 import { PublishTask } from './pages/PublishTask';
