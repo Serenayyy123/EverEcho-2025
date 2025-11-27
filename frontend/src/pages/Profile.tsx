@@ -103,9 +103,26 @@ export function Profile() {
         encryptionPubKey: publicKey,
       });
       
-      alert('Profile restored off-chain successfully! No tokens minted. Your encryption key has been saved locally.');
+      // 5. 成功提示
+      const message = [
+        'Profile restored off-chain successfully!',
+        '',
+        '✅ Encryption key generated and saved locally',
+        '✅ Profile updated in backend database',
+        '❌ No tokens minted (off-chain only)',
+        '',
+        `Default values used:`,
+        `- Nickname: ${nickname}`,
+        `- City: ${city}`,
+        `- Skills: ${skills.join(', ')}`,
+        '',
+        'Note: Profile editing is currently disabled.',
+        'To update your info, please contact support or wait for the edit feature.',
+      ].join('\n');
       
-      // 5. 刷新页面以显示更新后的 profile
+      alert(message);
+      
+      // 6. 刷新页面以显示更新后的 profile
       window.location.reload();
     } catch (e) {
       console.error('Restore failed:', e);
