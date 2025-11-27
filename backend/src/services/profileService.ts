@@ -54,10 +54,19 @@ export async function getProfile(address: string): Promise<ProfileOutput | null>
   }
 
   // 返回符合 schema 的 JSON（冻结点 3.2：字段命名一致）
+  // 处理 skills：尝试 JSON.parse，失败则按逗号分隔
+  let skills: string[];
+  try {
+    skills = JSON.parse(profile.skills);
+  } catch {
+    // 如果不是有效 JSON，按逗号分隔处理
+    skills = profile.skills.split(',').map(s => s.trim()).filter(s => s);
+  }
+  
   return {
     nickname: profile.nickname,
     city: profile.city,
-    skills: JSON.parse(profile.skills),
+    skills,
     encryptionPubKey: profile.encryptionPubKey,
     contacts: profile.contacts || undefined,
   };
