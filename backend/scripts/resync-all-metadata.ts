@@ -56,6 +56,7 @@ async function main() {
   }
 
   let updated = 0;
+  let fallbackUpdated = 0;
   let skipped = 0;
   let failed = 0;
 
@@ -81,19 +82,18 @@ async function main() {
 
       // 2.2 拉取 metadata
       let metadata: any = null;
+      let fetchFailed = false;
       try {
         const response = await fetch(taskURI);
         if (response.ok) {
           metadata = await response.json();
         } else {
-          console.log(`[ResyncMetadata]   ⚠️  HTTP ${response.status}, skipping (no fallback)`);
-          skipped++;
-          continue;
+          console.log(`[ResyncMetadata]   ⚠️  HTTP ${response.status}, using fallback`);
+          fetchFailed = true;
         }
       } catch (fetchError: any) {
-        console.log(`[ResyncMetadata]   ⚠️  Fetch failed: ${fetchError.message}, skipping (no fallback)`);
-        skipped++;
-        continue;
+        console.log(`[ResyncMetadata]   ⚠️  Fetch failed: ${fetchError.message}, using fallback`);
+        fetchFailed = true;
       }
 
       // 2.3 metadata 成功，覆盖 DB
@@ -113,6 +113,41 @@ async function main() {
 
         console.log(`[ResyncMetadata]   ✅ Updated: ${metadata.title}`);
         updated++;
+      } else if (fetchFailed) {
+        // 2.4 fetch 失败，写入 fallback（不覆盖已有真实值）
+        const existing = await prisma.task.findUnique({
+          where: {
+            chainId_taskId: {
+              chainId,
+              taskId,
+            },
+          },
+        });
+
+        const fallbackTitle = `Task ${taskId} (synced from chain)`;
+        const fallbackDescription = `Metadata unavailable (taskURI unreachable). Using fallback.`;
+
+        // 只在没有真实值时才写 fallback
+        const shouldUseFallbackTitle = !existing?.title || existing.title.includes('(synced from chain)');
+        const shouldUseFallbackDesc = !existing?.description || 
+          existing.description === '' || 
+          existing.description.includes('automatically synced from blockchain');
+
+        await upsertTask(
+          {
+            taskId,
+            title: shouldUseFallbackTitle ? fallbackTitle : existing!.title,
+            description: shouldUseFallbackDesc ? fallbackDescription : existing!.description,
+            contactsEncryptedPayload: existing?.contactsEncryptedPayload || '',
+            createdAt: existing?.createdAt || String(createdAt),
+          },
+          existing?.contactsPlaintext || undefined,
+          existing?.category || undefined,
+          existing?.creator || creator
+        );
+
+        console.log(`[ResyncMetadata]   🔄 Fallback updated: ${fallbackTitle}`);
+        fallbackUpdated++;
       }
     } catch (error: any) {
       console.error(`[ResyncMetadata]   ❌ Error: ${error.message}`);
@@ -122,7 +157,8 @@ async function main() {
 
   console.log('\n' + '='.repeat(60));
   console.log('[ResyncMetadata] 📊 Resync Summary:');
-  console.log(`[ResyncMetadata]   ✅ Updated: ${updated}`);
+  console.log(`[ResyncMetadata]   ✅ Updated (real metadata): ${updated}`);
+  console.log(`[ResyncMetadata]   🔄 Fallback updated: ${fallbackUpdated}`);
   console.log(`[ResyncMetadata]   ⏭️  Skipped: ${skipped}`);
   console.log(`[ResyncMetadata]   ❌ Failed: ${failed}`);
   console.log('='.repeat(60));
