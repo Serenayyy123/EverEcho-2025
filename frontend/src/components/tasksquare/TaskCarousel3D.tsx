@@ -184,6 +184,7 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    maxWidth: 'none',
   },
   carouselWrapper: {
     width: '100%',
@@ -193,12 +194,14 @@ const styles: Record<string, React.CSSProperties> = {
     justifyContent: 'center',
     cursor: 'grab',
     userSelect: 'none',
-    overflow: 'hidden', // 隐藏溢出的卡片
+    overflow: 'hidden',
+    maxWidth: 'none',
   },
   perspective: {
     position: 'relative',
     width: '360px',
     height: '480px',
+    maxWidth: 'none',
   },
   indicators: {
     position: 'absolute',
