@@ -80,17 +80,25 @@ export function Profile() {
       // 2. 保存私钥到 localStorage
       saveEncryptionPrivateKey(address, privateKey);
       
-      // 3. 准备 profile 数据（清理占位符）
+      // 3. 准备 profile 数据（清理占位符，确保必填字段不为空）
       const nickname = profile.nickname.includes('(synced from chain)') 
         ? 'User' 
-        : profile.nickname;
+        : (profile.nickname || 'User');
+      
+      const city = profile.city && profile.city.trim() !== '' 
+        ? profile.city 
+        : 'Unknown';
+      
+      const skills = profile.skills && profile.skills.length > 0 
+        ? profile.skills 
+        : ['General'];
       
       // 4. 只调用 backend API，不触发链上交易
       await apiClient.createProfile({
         address,
         nickname,
-        city: profile.city || '',
-        skills: profile.skills || [],
+        city,
+        skills,
         contacts: profile.contacts || undefined,
         encryptionPubKey: publicKey,
       });
