@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useWallet } from '../hooks/useWallet';
 
 /**
- * 首页 V2 - 高级科技感设计
+ * 首页 V2 - Design Tokens 系统实现
+ * Deep space / Quiet luxury / Soft glow
  * 保持所有原有逻辑不变，只升级视觉
  */
 
@@ -36,44 +37,40 @@ export function HomeV2() {
 
   return (
     <div style={styles.container}>
-      {/* 深邃背景层次 - UI only */}
-      <div style={styles.bgLayer1} />
-      <div style={styles.bgLayer2} />
-      
       <div style={styles.content}>
-        {/* 巨大白色衬线标题 - 电影海报风格 - UI only */}
+        {/* Film-poster Serif Title - UI only */}
         <h1 style={styles.title}>EverEcho</h1>
 
         {!address ? (
           <>
-            {/* 高级产品官网风格按钮 - UI only */}
+            {/* Premium Button with Design Tokens - UI only */}
             <button
               onClick={() => connect(true)}
               disabled={isConnecting}
               style={{
-                ...styles.premiumButton,
-                ...(isConnecting ? styles.premiumButtonLoading : {}),
+                ...styles.primaryButton,
+                ...(isConnecting ? styles.buttonLoading : {}),
               }}
               onMouseEnter={(e) => {
                 if (!isConnecting) {
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                  e.currentTarget.style.boxShadow = styles.premiumButtonHover.boxShadow as string;
+                  e.currentTarget.style.transform = 'translateY(-1px)';
+                  e.currentTarget.style.background = 'var(--btn-primary-bg-hover)';
                 }
               }}
               onMouseLeave={(e) => {
                 if (!isConnecting) {
                   e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = styles.premiumButton.boxShadow as string;
+                  e.currentTarget.style.background = 'var(--btn-primary-bg)';
                 }
               }}
               onMouseDown={(e) => {
                 if (!isConnecting) {
-                  e.currentTarget.style.transform = 'translateY(0) scale(0.98)';
+                  e.currentTarget.style.transform = 'translateY(1px)';
                 }
               }}
               onMouseUp={(e) => {
                 if (!isConnecting) {
-                  e.currentTarget.style.transform = 'translateY(-2px) scale(1)';
+                  e.currentTarget.style.transform = 'translateY(-1px)';
                 }
               }}
             >
@@ -97,38 +94,17 @@ export function HomeV2() {
 }
 
 const styles: Record<string, React.CSSProperties> = {
-  // 深邃背景 - 安静但有层次 - UI only
+  // Deep space background with Design Tokens - UI only
   container: {
     minHeight: '100vh',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    background: '#0a0a0f',
+    background: 'var(--bg-gradient)',
     padding: '20px',
     position: 'relative',
     overflow: 'hidden',
-  },
-  // 背景层次 1 - 深层渐变 - UI only
-  bgLayer1: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    background: 'radial-gradient(ellipse at 50% 30%, rgba(20, 20, 40, 0.4) 0%, transparent 60%)',
-    pointerEvents: 'none',
-  },
-  // 背景层次 2 - 微妙光晕 - UI only
-  bgLayer2: {
-    position: 'absolute',
-    top: '40%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: '600px',
-    height: '400px',
-    background: 'radial-gradient(ellipse, rgba(59, 130, 246, 0.08) 0%, transparent 70%)',
-    filter: 'blur(60px)',
-    pointerEvents: 'none',
+    animation: 'breathe 10s ease-in-out infinite',
   },
   content: {
     maxWidth: '800px',
@@ -141,57 +117,57 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     gap: '64px',
   },
-  // 巨大白色衬线标题 - 电影海报风格 - UI only
+  // Film-poster Serif Title with Design Tokens - UI only
   title: {
-    fontSize: '120px',
-    fontWeight: 300,
-    fontFamily: '"Playfair Display", "Georgia", "Times New Roman", serif',
-    color: '#ffffff',
+    fontSize: 'var(--h1-size)',
+    fontWeight: 'var(--h1-weight)' as any,
+    fontFamily: 'var(--font-serif)',
+    color: 'var(--text-100)',
     margin: 0,
-    letterSpacing: '0.03em',
-    lineHeight: 0.9,
-    textShadow: '0 2px 40px rgba(0, 0, 0, 0.5)',
-    animation: 'fadeInUp 1s ease-out',
+    letterSpacing: 'var(--h1-letter)',
+    lineHeight: 'var(--h1-line)' as any,
+    textShadow: 'var(--shadow-soft)',
+    animation: 'fadeInUp var(--dur-slow) var(--ease-out)',
   },
-  // 高级产品官网风格按钮 - UI only
-  premiumButton: {
+  // Premium Button with Design Tokens - UI only
+  primaryButton: {
     padding: '18px 56px',
     fontSize: '16px',
-    fontWeight: 500,
-    color: '#ffffff',
-    background: 'rgba(255, 255, 255, 0.08)',
-    backdropFilter: 'blur(10px)',
-    WebkitBackdropFilter: 'blur(10px)',
-    border: '1px solid rgba(255, 255, 255, 0.12)',
-    borderRadius: '12px',
+    fontWeight: 600,
+    fontFamily: 'var(--font-sans)',
+    color: 'var(--btn-primary-text)',
+    background: 'var(--btn-primary-bg)',
+    border: 'none',
+    borderRadius: 'var(--radius-button)',
     cursor: 'pointer',
     position: 'relative',
     overflow: 'hidden',
-    boxShadow: '0 4px 24px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-    transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+    boxShadow: 'var(--btn-primary-shadow)',
+    transition: 'all var(--dur-med) var(--ease-out)',
     letterSpacing: '0.02em',
+    outline: 'none',
   },
-  premiumButtonHover: {
-    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15)',
-  },
-  premiumButtonLoading: {
-    opacity: 0.6,
+  buttonLoading: {
+    opacity: 0.7,
     cursor: 'not-allowed',
   },
   statusText: {
-    fontSize: '14px',
-    fontWeight: 400,
-    color: 'rgba(255, 255, 255, 0.5)',
+    fontSize: 'var(--tagline-size)',
+    fontWeight: 'var(--tagline-weight)' as any,
+    fontFamily: 'var(--font-sans)',
+    color: 'var(--text-300)',
     margin: 0,
-    letterSpacing: '0.01em',
+    letterSpacing: '0.05em',
+    textTransform: 'uppercase' as const,
   },
   errorMessage: {
     fontSize: '14px',
-    color: 'rgba(255, 100, 100, 0.9)',
+    fontFamily: 'var(--font-sans)',
+    color: 'var(--error)',
     padding: '12px 24px',
-    background: 'rgba(255, 100, 100, 0.1)',
-    border: '1px solid rgba(255, 100, 100, 0.2)',
-    borderRadius: '8px',
+    background: 'var(--error-bg)',
+    border: '1px solid var(--error)',
+    borderRadius: 'var(--radius-input)',
     maxWidth: '400px',
   },
 };
