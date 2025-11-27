@@ -190,6 +190,10 @@ router.post('/decrypt', async (req: Request, res: Response) => {
       });
     }
     
+    console.log('[/decrypt] Contacts from DB:', task.contactsPlaintext.slice(0, 50) + '...');
+    console.log('[/decrypt] Contacts length:', task.contactsPlaintext.length);
+    console.log('[/decrypt] Contacts looks like hex:', /^[0-9a-f]+$/i.test(task.contactsPlaintext));
+    
     // 8. 返回明文联系方式（MVP 简化方案）
     res.status(200).json({
       success: true,
