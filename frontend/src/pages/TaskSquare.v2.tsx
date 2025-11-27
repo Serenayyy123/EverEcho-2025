@@ -31,7 +31,8 @@ export function TaskSquareV2() {
     setShowOngoing(saved === 'true');
   }, [chainId]);
 
-  const [selectedStatus, setSelectedStatus] = useState<number | null>(TaskStatus.Open);
+  // Status filter removed from UI but kept for potential future use
+  // const [selectedStatus, setSelectedStatus] = useState<number | null>(TaskStatus.Open);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
 
