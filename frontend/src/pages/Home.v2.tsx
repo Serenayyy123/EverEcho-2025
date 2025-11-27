@@ -1,8 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useWallet } from '../hooks/useWallet';
-import { Alert } from '../components/ui/Alert';
-import { themeV2 } from '../styles/theme-v2';
 
 /**
  * 首页 V2 - 高级科技感设计
