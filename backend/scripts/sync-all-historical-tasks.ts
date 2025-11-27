@@ -48,6 +48,7 @@ async function main() {
 
   // 2. 遍历所有任务
   let synced = 0;
+  let fallbackSynced = 0;
   let skipped = 0;
   let failed = 0;
 
@@ -78,43 +79,67 @@ async function main() {
 
       console.log(`  📥 Fetching metadata from: ${taskURI}`);
 
-      // 获取 metadata（如果失败则使用默认值）
+      // 获取 metadata（如果失败则使用 fallback）
       let metadata: any = null;
+      let fetchFailed = false;
       try {
         const response = await fetch(taskURI);
         if (response.ok) {
           metadata = await response.json();
         } else {
-          console.log(`  ⚠️  Failed to fetch metadata: HTTP ${response.status}, using defaults`);
+          console.log(`  ⚠️  Failed to fetch metadata: HTTP ${response.status}, using fallback`);
+          fetchFailed = true;
         }
       } catch (fetchError: any) {
-        console.log(`  ⚠️  Failed to fetch metadata: ${fetchError.message}, using defaults`);
+        console.log(`  ⚠️  Failed to fetch metadata: ${fetchError.message}, using fallback`);
+        fetchFailed = true;
       }
 
-      // 使用 metadata 或默认值
-      const title = metadata?.title || `Task ${i} (synced from chain)`;
-      const description = metadata?.description || 'This task was automatically synced from blockchain';
-      const contactsEncryptedPayload = metadata?.contactsEncryptedPayload || '';
-      const createdAt = String(metadata?.createdAt || Math.floor(Date.now() / 1000));
-      const category = metadata?.category || null;
-      const creator = metadata?.creator || taskData[1]; // 使用链上的 creator 地址
+      if (metadata) {
+        // ✅ 成功路径：使用真实 metadata
+        const title = metadata.title || `Task ${i}`;
+        const description = metadata.description || '';
+        const contactsEncryptedPayload = metadata.contactsEncryptedPayload || '';
+        const createdAt = String(metadata.createdAt || Math.floor(Date.now() / 1000));
+        const category = metadata.category || null;
+        const creator = metadata.creator || taskData[1];
 
-      // 写入数据库
-      await prisma.task.create({
-        data: {
-          chainId,
-          taskId: String(i),
-          title,
-          description,
-          contactsEncryptedPayload,
-          createdAt,
-          category,
-          creator,
-        },
-      });
+        await prisma.task.create({
+          data: {
+            chainId,
+            taskId: String(i),
+            title,
+            description,
+            contactsEncryptedPayload,
+            createdAt,
+            category,
+            creator,
+          },
+        });
 
-      console.log(`  ✅ Synced: ${title}`);
-      synced++;
+        console.log(`  ✅ Synced: ${title}`);
+        synced++;
+      } else if (fetchFailed) {
+        // 🔄 失败路径：使用 fallback
+        const fallbackTitle = `Task ${i} (synced from chain)`;
+        const fallbackDescription = `Metadata unavailable (taskURI unreachable). Using fallback.`;
+
+        await prisma.task.create({
+          data: {
+            chainId,
+            taskId: String(i),
+            title: fallbackTitle,
+            description: fallbackDescription,
+            contactsEncryptedPayload: '',
+            createdAt: String(Math.floor(Date.now() / 1000)),
+            category: null,
+            creator: taskData[1],
+          },
+        });
+
+        console.log(`  🔄 Fallback synced: ${fallbackTitle}`);
+        fallbackSynced++;
+      }
     } catch (error: any) {
       console.error(`  ❌ Error: ${error.message}`);
       failed++;
@@ -123,7 +148,8 @@ async function main() {
 
   console.log('\n' + '='.repeat(60));
   console.log('📊 Sync Summary:');
-  console.log(`  ✅ Synced: ${synced}`);
+  console.log(`  ✅ Synced (real metadata): ${synced}`);
+  console.log(`  🔄 Fallback synced: ${fallbackSynced}`);
   console.log(`  ⏭️  Skipped: ${skipped}`);
   console.log(`  ❌ Failed: ${failed}`);
   console.log('='.repeat(60));
