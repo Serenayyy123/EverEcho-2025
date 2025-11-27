@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Home } from './pages/Home';
 import { LandingV2 } from './pages/Landing.v2';
+import { HomeGalaxy } from './pages/Home.galaxy';
 import { Register } from './pages/Register';
 import { TaskSquare } from './pages/TaskSquare';
 import { TaskSquareV2 } from './pages/TaskSquare.v2';
@@ -17,14 +18,21 @@ import { ToastContainer } from './components/ui/ToastContainer';
  * P0-F4：发布任务
  * 
  * UI V2: 通过 VITE_UI_V2 环境变量切换新旧 UI
+ * VITE_ENABLE_HOME_PARTICLES: 启用银河行星粒子动画（默认 true）
  */
 
 // UI V2 开关
 const isUIV2 = import.meta.env.VITE_UI_V2 === 'true';
+// 粒子动画开关（默认开启）
+const enableParticles = import.meta.env.VITE_ENABLE_HOME_PARTICLES !== 'false';
 
 function App() {
   // 根据环境变量选择组件
-  const HomeComponent = isUIV2 ? LandingV2 : Home;
+  let HomeComponent = Home;
+  if (isUIV2) {
+    HomeComponent = enableParticles ? HomeGalaxy : LandingV2;
+  }
+  
   const TaskSquareComponent = isUIV2 ? TaskSquareV2 : TaskSquare;
   
   return (
