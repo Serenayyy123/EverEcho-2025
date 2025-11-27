@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Task } from '../../hooks/useTasks';
-import { getCategoryTheme } from '../../utils/categoryTheme';
+import { getCategoryFullTheme } from '../../utils/categoryTheme';
 
 interface TaskCard3DProps {
   task: Task;
@@ -12,7 +12,7 @@ interface TaskCard3DProps {
 
 export function TaskCard3D({ task, index, activeIndex, totalCards }: TaskCard3DProps) {
   const navigate = useNavigate();
-  const theme = getCategoryTheme(task.metadata?.category);
+  const theme = getCategoryFullTheme(task.metadata?.category);
   
   const offset = index - activeIndex;
   const absOffset = Math.abs(offset);
@@ -62,10 +62,16 @@ export function TaskCard3D({ task, index, activeIndex, totalCards }: TaskCard3DP
       <div
         style={{
           ...styles.card,
+          background: `
+            radial-gradient(120% 120% at 20% 0%, rgba(255,255,255,0.06), transparent 55%),
+            linear-gradient(180deg, rgba(255,255,255,0.04), transparent 35%),
+            ${theme.bg}
+          `,
+          borderColor: theme.border,
           boxShadow: isActive
-            ? `0 0 60px ${theme.glow}, 0 20px 60px rgba(0,0,0,0.8)`
-            : '0 10px 40px rgba(0,0,0,0.6)',
-          filter: isActive ? 'brightness(1.1)' : 'brightness(0.6)',
+            ? `0 12px 40px rgba(0,0,0,0.65), inset 0 0 0 1px rgba(255,255,255,0.05), inset 0 0 32px ${theme.glow}`
+            : `0 8px 30px rgba(0,0,0,0.55), inset 0 0 0 1px rgba(255,255,255,0.02)`,
+          filter: isActive ? 'brightness(1)' : 'brightness(0.7)',
         }}
       >
         {/* Category Tag */}
@@ -79,12 +85,12 @@ export function TaskCard3D({ task, index, activeIndex, totalCards }: TaskCard3DP
         </div>
 
         {/* Status Badge */}
-        <div style={styles.statusBadge}>
+        <div style={{ ...styles.statusBadge, backgroundColor: theme.tag, color: theme.text }}>
           {getStatusLabel(task.status)}
         </div>
 
         {/* Title */}
-        <h3 style={styles.title}>
+        <h3 style={{ ...styles.title, color: theme.text }}>
           {task.metadata?.title || `TASK #${task.taskId}`}
         </h3>
 
@@ -150,16 +156,14 @@ const styles: Record<string, React.CSSProperties> = {
   card: {
     width: '100%',
     height: '100%',
-    background: 'rgba(14, 18, 26, 0.85)',
-    border: '1px solid rgba(255, 255, 255, 0.08)',
-    borderRadius: '16px',
+    border: '1px solid',
+    borderRadius: '20px',
     padding: '28px',
     display: 'flex',
     flexDirection: 'column',
     gap: '20px',
     position: 'relative',
     overflow: 'hidden',
-    backdropFilter: 'blur(20px)',
     transition: 'all 0.4s ease',
   },
   categoryTag: {
@@ -180,15 +184,12 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: '9px',
     fontWeight: 600,
     letterSpacing: '0.12em',
-    color: 'rgba(255, 255, 255, 0.6)',
     border: '1px solid rgba(255, 255, 255, 0.15)',
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
   },
   title: {
     fontSize: '22px',
     fontWeight: 700,
     letterSpacing: '0.02em',
-    color: '#ffffff',
     margin: 0,
     lineHeight: 1.3,
     minHeight: '60px',
