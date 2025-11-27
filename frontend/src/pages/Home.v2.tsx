@@ -1,8 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useWallet } from '../hooks/useWallet';
-import { CardV2 } from '../components/ui/Card.v2';
-import { ButtonV2 } from '../components/ui/Button.v2';
 import { Alert } from '../components/ui/Alert';
 import { themeV2 } from '../styles/theme-v2';
 
