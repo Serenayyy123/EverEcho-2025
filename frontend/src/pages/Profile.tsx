@@ -267,20 +267,17 @@ export function Profile() {
                       <Alert variant="warning" title="Profile incomplete (historical user)">
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                           <p style={{ margin: 0 }}>
-                            Your profile was synced from an old on-chain record. The historical profileURI is unreachable,
-                            so your encryption key and off-chain details were not recovered.
+                            Your profile was synced from an old on-chain record. You are already registered on-chain, 
+                            but your encryption key was not recovered from the historical profileURI.
                           </p>
                           <p style={{ margin: 0 }}>
-                            Impact: ContactKey sync will fail for tasks created by this address, and Helpers may not see your contacts.
+                            <strong>Impact:</strong> ContactKey sync will fail for tasks you create, and Helpers may not 
+                            be able to see your contact information.
                           </p>
                           <p style={{ margin: 0 }}>
-                            Fix: Re-register once to regenerate your encryption key and upload a full profile to staging.
+                            <strong>Note:</strong> You cannot re-register (already registered on-chain). A profile update 
+                            feature will be available in a future release.
                           </p>
-                          <div style={{ marginTop: 8 }}>
-                            <Button variant="primary" onClick={() => navigate('/register')}>
-                              Restore profile (Re-register)
-                            </Button>
-                          </div>
                         </div>
                       </Alert>
                     </div>
