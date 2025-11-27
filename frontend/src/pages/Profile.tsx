@@ -252,6 +252,41 @@ export function Profile() {
 
             {!profileLoading && !profileError && profile && (
               <>
+                {/* Historical User Warning */}
+                {(() => {
+                  const needsRestore =
+                    profile &&
+                    (
+                      !profile.encryptionPubKey ||
+                      profile.encryptionPubKey.trim() === '' ||
+                      profile.nickname.includes('(synced from chain)')
+                    );
+                  
+                  return needsRestore && (
+                    <div style={{ marginBottom: '24px' }}>
+                      <Alert variant="warning" title="Profile incomplete (historical user)">
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                          <p style={{ margin: 0 }}>
+                            Your profile was synced from an old on-chain record. The historical profileURI is unreachable,
+                            so your encryption key and off-chain details were not recovered.
+                          </p>
+                          <p style={{ margin: 0 }}>
+                            Impact: ContactKey sync will fail for tasks created by this address, and Helpers may not see your contacts.
+                          </p>
+                          <p style={{ margin: 0 }}>
+                            Fix: Re-register once to regenerate your encryption key and upload a full profile to staging.
+                          </p>
+                          <div style={{ marginTop: 8 }}>
+                            <Button variant="primary" onClick={() => navigate('/register')}>
+                              Restore profile (Re-register)
+                            </Button>
+                          </div>
+                        </div>
+                      </Alert>
+                    </div>
+                  );
+                })()}
+
                 {/* Profile Header */}
                 <div style={styles.profileHeader}>
                   <div style={styles.avatarSection}>
