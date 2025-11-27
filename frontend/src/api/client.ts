@@ -65,9 +65,11 @@ export interface ContactsDecryptRequest {
 }
 
 export interface ContactsDecryptResponse {
-  wrappedDEK: string;
-  senderPublicKey: string;
-  contactsEncryptedPayload: string;
+  success: boolean;
+  contacts: string; // 明文联系方式（MVP 简化方案）
+  wrappedDEK: string; // 保留用于未来完整实现
+  senderPublicKey?: string; // 可选
+  contactsEncryptedPayload?: string; // 可选（向后兼容）
 }
 
 class APIClient {
