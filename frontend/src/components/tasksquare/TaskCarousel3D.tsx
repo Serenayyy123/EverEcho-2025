@@ -28,7 +28,7 @@ export function TaskCarousel3D({ tasks }: TaskCarousel3DProps) {
     if (!isDragging) return;
     
     const diff = currentX - startX;
-    const threshold = 80;
+    const threshold = 50; // 降低阈值，更容易触发
     
     if (diff > threshold && activeIndex > 0) {
       setActiveIndex(activeIndex - 1);
@@ -61,24 +61,33 @@ export function TaskCarousel3D({ tasks }: TaskCarousel3DProps) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [activeIndex, tasks.length]);
 
-  // 滚轮导航
+  // 滚轮导航（带防抖）
   useEffect(() => {
+    let wheelTimeout: NodeJS.Timeout;
+    
     const handleWheel = (e: WheelEvent) => {
       if (!containerRef.current?.contains(e.target as Node)) return;
       
       e.preventDefault();
       
-      if (e.deltaY > 0 && activeIndex < tasks.length - 1) {
-        setActiveIndex(activeIndex + 1);
-      } else if (e.deltaY < 0 && activeIndex > 0) {
-        setActiveIndex(activeIndex - 1);
-      }
+      // 防抖：避免滚轮过快触发
+      clearTimeout(wheelTimeout);
+      wheelTimeout = setTimeout(() => {
+        if (e.deltaY > 20 && activeIndex < tasks.length - 1) {
+          setActiveIndex(activeIndex + 1);
+        } else if (e.deltaY < -20 && activeIndex > 0) {
+          setActiveIndex(activeIndex - 1);
+        }
+      }, 50);
     };
 
     const container = containerRef.current;
     if (container) {
       container.addEventListener('wheel', handleWheel, { passive: false });
-      return () => container.removeEventListener('wheel', handleWheel);
+      return () => {
+        container.removeEventListener('wheel', handleWheel);
+        clearTimeout(wheelTimeout);
+      };
     }
   }, [activeIndex, tasks.length]);
 
@@ -98,7 +107,10 @@ export function TaskCarousel3D({ tasks }: TaskCarousel3DProps) {
     <div style={styles.container}>
       <div
         ref={containerRef}
-        style={styles.carouselWrapper}
+        style={{
+          ...styles.carouselWrapper,
+          cursor: isDragging ? 'grabbing' : 'grab',
+        }}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
@@ -115,6 +127,13 @@ export function TaskCarousel3D({ tasks }: TaskCarousel3DProps) {
             />
           ))}
         </div>
+        
+        {/* 拖拽提示 */}
+        {!isDragging && tasks.length > 1 && (
+          <div style={styles.dragHint}>
+            ← DRAG TO BROWSE →
+          </div>
+        )}
       </div>
 
       {/* Navigation Indicators */}
@@ -174,13 +193,15 @@ const styles: Record<string, React.CSSProperties> = {
     justifyContent: 'center',
     cursor: 'grab',
     userSelect: 'none',
+    overflow: 'hidden', // 隐藏溢出的卡片
   },
   perspective: {
     position: 'relative',
     width: '360px',
     height: '480px',
     transformStyle: 'preserve-3d',
-    perspective: '1200px',
+    perspective: '1800px', // 增强透视效果
+    perspectiveOrigin: '50% 50%',
   },
   indicators: {
     position: 'absolute',
@@ -265,5 +286,17 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: '14px',
     color: 'rgba(255, 255, 255, 0.5)',
     margin: 0,
+  },
+  dragHint: {
+    position: 'absolute',
+    bottom: '80px',
+    left: '50%',
+    transform: 'translateX(-50%)',
+    fontSize: '11px',
+    fontWeight: 600,
+    letterSpacing: '0.15em',
+    color: 'rgba(255, 255, 255, 0.3)',
+    animation: 'pulse 2s ease-in-out infinite',
+    pointerEvents: 'none',
   },
 };
