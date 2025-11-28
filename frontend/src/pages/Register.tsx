@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useWallet } from '../hooks/useWallet';
 import { useRegister } from '../hooks/useRegister';
 import { ProfileData } from '../api/client';
-import { PageLayout } from '../components/layout/PageLayout';
+import { DarkPageLayout } from '../components/layout/DarkPageLayout';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
@@ -100,14 +100,9 @@ export function Register() {
       
       const success = await register(profileData);
       if (success) {
-        // Check if we should show add token modal (only first time)
-        const hasWatched = localStorage.getItem('everecho_hasWatchedECHO');
-        if (hasWatched !== 'true') {
-          setShowAddTokenModal(true);
-          // Don't auto-navigate, let user interact with modal
-        } else {
-          navigate('/tasks');
-        }
+        // Always show add token modal after successful registration
+        setShowAddTokenModal(true);
+        // Don't auto-navigate, let user interact with modal
       }
     } catch (error) {
       console.error('Registration error:', error);
@@ -212,18 +207,18 @@ export function Register() {
 
   if (!address) {
     return (
-      <PageLayout title="Register" showNav={true}>
+      <DarkPageLayout title="Register" theme="light">
         <Card>
           <Alert variant="warning">
             Please connect your wallet first to register.
           </Alert>
         </Card>
-      </PageLayout>
+      </DarkPageLayout>
     );
   }
 
   return (
-    <PageLayout title="Create Your Profile" showNav={true}>
+    <DarkPageLayout title="Create Your Profile" theme="light">
       <NetworkGuard chainId={chainId}>
         <Card>
           <div style={styles.content}>
@@ -373,6 +368,8 @@ export function Register() {
                 loading={isRegistering}
                 fullWidth
                 size="lg"
+                variant="secondary"
+                theme="light"
               >
                 Register
               </Button>
@@ -456,13 +453,13 @@ export function Register() {
           </div>
         </div>
       )}
-    </PageLayout>
+    </DarkPageLayout>
   );
 }
 
 const styles: Record<string, React.CSSProperties> = {
   content: {
-    maxWidth: '600px',
+    maxWidth: '550px',
     margin: '0 auto',
   },
   subtitle: {
@@ -598,7 +595,7 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: '20px',
     fontWeight: 600,
     marginBottom: '12px',
-    color: '#111827',
+    color: '#FFFFFF',
   },
   modalText: {
     fontSize: '14px',

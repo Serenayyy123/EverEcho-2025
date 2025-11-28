@@ -4,10 +4,14 @@ import { useContacts } from '../hooks/useContacts';
 import { Card } from './ui/Card';
 import { Button } from './ui/Button';
 import { Alert } from './ui/Alert';
+import { getCategorySuccessTheme } from '../utils/categoryTheme';
 
 interface ContactsDisplayProps {
   task: {
     taskId: number | string;
+    metadata?: {
+      category?: string;
+    };
   };
   signer: ethers.Signer | null;
   address: string | null;
@@ -23,6 +27,11 @@ export function ContactsDisplay({ task, signer, address }: ContactsDisplayProps)
     signer,
     address
   );
+
+  // 获取category主题色用于文字颜色
+  const categoryTheme = task.metadata?.category 
+    ? getCategorySuccessTheme(task.metadata.category)
+    : null;
 
   // 解析联系方式，识别 Telegram 和 Email
   const parseContacts = (contactsText: string) => {
@@ -45,8 +54,11 @@ export function ContactsDisplay({ task, signer, address }: ContactsDisplayProps)
   console.log('[ContactsDisplay] Parsed contacts:', parsedContacts);
 
   return (
-    <Card>
-      <h3 style={styles.title}>📱 Contact Information</h3>
+    <Card category={task.metadata?.category}>
+      <h3 style={{
+        ...styles.title,
+        color: categoryTheme?.text || styles.title.color,
+      }}>📱 Contact Information</h3>
       
       {!contacts ? (
         <div style={styles.loadSection}>
@@ -56,7 +68,8 @@ export function ContactsDisplay({ task, signer, address }: ContactsDisplayProps)
           <Button 
             onClick={loadContacts} 
             loading={loading}
-            variant="primary"
+            variant="ghost"
+            theme="light"
           >
             🔓 View Contacts
           </Button>
@@ -76,7 +89,7 @@ export function ContactsDisplay({ task, signer, address }: ContactsDisplayProps)
                 rel="noopener noreferrer"
                 style={styles.link}
               >
-                <Button variant="primary" size="sm">
+                <Button variant="ghost" size="sm" theme="light">
                   💬 Open Telegram Chat
                 </Button>
               </a>

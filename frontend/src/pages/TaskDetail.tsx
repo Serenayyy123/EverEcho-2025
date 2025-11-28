@@ -7,10 +7,9 @@ import { Contract, ethers } from 'ethers';
 import { getContractAddresses } from '../contracts/addresses';
 import TaskEscrowABI from '../contracts/TaskEscrow.json';
 import EOCHOTokenABI from '../contracts/EOCHOToken.json';
-import { PageLayout } from '../components/layout/PageLayout';
+import { DarkPageLayout } from '../components/layout/DarkPageLayout';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
-import { Badge } from '../components/ui/Badge';
 import { Alert } from '../components/ui/Alert';
 import { NetworkGuard } from '../components/ui/NetworkGuard';
 import { apiClient } from '../api/client';
@@ -18,6 +17,7 @@ import { TimeoutIndicator } from '../components/TimeoutIndicator';
 import { TerminateRequest } from '../components/TerminateRequest';
 import { RequestFixUI } from '../components/RequestFixUI';
 import { ContactsDisplay } from '../components/ContactsDisplay';
+import { TaskDetailHero } from '../components/taskdetail/TaskDetailHero';
 
 /**
  * 任务详情页（P0-F2 + P1-F5 + P1-F6 + P1-F7）
@@ -215,18 +215,6 @@ export function TaskDetail() {
     }
   };
 
-  // 获取状态变体
-  const getStatusVariant = (status: number) => {
-    const variants: Record<number, 'open' | 'inprogress' | 'submitted' | 'completed' | 'cancelled'> = {
-      0: 'open',
-      1: 'inprogress',
-      2: 'submitted',
-      3: 'completed',
-      4: 'cancelled',
-    };
-    return variants[status] || 'open';
-  };
-
   const getStatusLabel = (status: number) => {
     const labels: Record<number, string> = {
       0: 'Open',
@@ -256,6 +244,7 @@ export function TaskDetail() {
               fullWidth
               loading={actionLoading}
               onClick={() => executeAction('Accept Task', 'acceptTask')}
+              theme="light"
             >
               Accept Task
             </Button>
@@ -268,6 +257,7 @@ export function TaskDetail() {
               fullWidth
               loading={actionLoading}
               onClick={() => executeAction('Cancel Task', 'cancelTask')}
+              theme="light"
             >
               Cancel Task
             </Button>
@@ -286,6 +276,7 @@ export function TaskDetail() {
             fullWidth
             loading={actionLoading}
             onClick={() => executeAction('Submit Work', 'submitWork')}
+            theme="light"
           >
             Submit Work
           </Button>
@@ -304,6 +295,7 @@ export function TaskDetail() {
               fullWidth
               loading={actionLoading}
               onClick={() => executeAction('Confirm Complete', 'confirmComplete')}
+              theme="light"
             >
               ✓ Confirm Complete
             </Button>
@@ -325,35 +317,35 @@ export function TaskDetail() {
 
   if (loading) {
     return (
-      <PageLayout title="Task Detail">
+      <DarkPageLayout title="Task Detail" theme="light">
         <Card>
           <div style={styles.centerText}>
             <p style={styles.loadingText}>Loading task...</p>
           </div>
         </Card>
-      </PageLayout>
+      </DarkPageLayout>
     );
   }
 
   if (error || !task) {
     return (
-      <PageLayout title="Task Detail">
+      <DarkPageLayout title="Task Detail" theme="light">
         <Card>
           <Alert variant="error">
             {error || 'Task not found'}
           </Alert>
           <div style={styles.centerActions}>
-            <Button variant="secondary" onClick={() => navigate('/tasks')}>
+            <Button variant="secondary" onClick={() => navigate('/tasks')} theme="light">
               ← Back to Task Square
             </Button>
           </div>
         </Card>
-      </PageLayout>
+      </DarkPageLayout>
     );
   }
 
   return (
-    <PageLayout title="Task Detail">
+    <DarkPageLayout title="Task Detail" theme="light">
       <NetworkGuard chainId={chainId}>
         <div style={styles.container}>
           {/* Back Button */}
@@ -361,27 +353,13 @@ export function TaskDetail() {
             variant="ghost"
             size="sm"
             onClick={() => navigate('/tasks')}
+            theme="light"
           >
             ← Back to Task Square
           </Button>
 
-          {/* Main Card */}
-          <Card>
-            <div style={styles.header}>
-              <div style={styles.titleSection}>
-                <h1 style={styles.title}>
-                  {task.metadata?.title || `Task #${task.taskId}`}
-                </h1>
-                <Badge variant={getStatusVariant(task.status)}>
-                  {getStatusLabel(task.status)}
-                </Badge>
-              </div>
-              <div style={styles.rewardSection}>
-                <div style={styles.rewardAmount}>{task.reward}</div>
-                <div style={styles.rewardLabel}>ECHO</div>
-              </div>
-            </div>
-
+          {/* Unified Color Card */}
+          <TaskDetailHero task={task}>
             {/* Metadata Error Warning */}
             {metadataError && (
               <Alert variant="warning" title="Metadata Load Failed">
@@ -389,17 +367,9 @@ export function TaskDetail() {
               </Alert>
             )}
 
-            {/* Description */}
-            {task.metadata?.description && (
-              <div style={styles.section}>
-                <h3 style={styles.sectionTitle}>Description</h3>
-                <p style={styles.description}>{task.metadata.description}</p>
-              </div>
-            )}
-
             {/* Task Information */}
-            <div style={styles.section}>
-              <h3 style={styles.sectionTitle}>Task Information</h3>
+            <div style={styles.coloredSection}>
+              <h3 style={styles.coloredSectionTitle}>Task Information</h3>
               <div style={styles.infoGrid}>
                 <InfoRow label="Task ID" value={task.taskId} />
                 <InfoRow label="Creator" value={formatAddress(task.creator)} />
@@ -422,7 +392,7 @@ export function TaskDetail() {
 
             {/* Settlement Details (Completed only) */}
             {task.status === TaskStatus.Completed && (
-              <Alert variant="success" title="💰 Settlement Completed">
+              <Alert variant="success" title="💰 Settlement Completed" category={task.metadata?.category}>
                 <div style={styles.settlementGrid}>
                   <div style={styles.settlementRow}>
                     <span>Helper received:</span>
@@ -506,10 +476,10 @@ export function TaskDetail() {
 
             {/* Contacts Display */}
             <ContactsDisplay task={task} signer={signer} address={address} />
-          </Card>
+          </TaskDetailHero>
         </div>
       </NetworkGuard>
-    </PageLayout>
+    </DarkPageLayout>
   );
 }
 
@@ -535,7 +505,7 @@ const styles: Record<string, React.CSSProperties> = {
     gap: '24px',
     marginBottom: '24px',
     paddingBottom: '24px',
-    borderBottom: '1px solid #e5e7eb',
+    borderBottom: '1px solid rgba(26, 26, 26, 0.12)',
   },
   titleSection: {
     flex: 1,
@@ -546,7 +516,7 @@ const styles: Record<string, React.CSSProperties> = {
   title: {
     fontSize: '28px',
     fontWeight: 700,
-    color: '#111827',
+    color: '#1A1A1A',
     margin: 0,
     lineHeight: '1.3',
   },
@@ -563,22 +533,37 @@ const styles: Record<string, React.CSSProperties> = {
   },
   rewardLabel: {
     fontSize: '14px',
-    color: '#6b7280',
+    color: '#2D2D2D',
     fontWeight: 500,
   },
   section: {
     marginBottom: '24px',
   },
+  coloredSection: {
+    padding: '16px',
+    background: 'rgba(255, 255, 255, 0.25)',
+    borderRadius: '12px',
+    backdropFilter: 'blur(4px)',
+    marginBottom: '0',
+  },
   sectionTitle: {
     fontSize: '18px',
     fontWeight: 600,
-    color: '#374151',
+    color: '#1A1A1A',
     marginBottom: '12px',
+  },
+  coloredSectionTitle: {
+    fontFamily: "'Inter', 'Noto Sans SC', sans-serif",
+    fontSize: '16px',
+    fontWeight: 600,
+    color: 'rgba(45, 45, 45, 0.9)',
+    marginBottom: '12px',
+    margin: '0 0 12px 0',
   },
   description: {
     fontSize: '15px',
     lineHeight: '1.6',
-    color: '#4b5563',
+    color: '#2D2D2D',
     margin: 0,
   },
   infoGrid: {
@@ -590,19 +575,21 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     justifyContent: 'space-between',
     padding: '12px',
-    backgroundColor: '#f9fafb',
+    backgroundColor: 'rgba(255, 255, 255, 0.4)',
     borderRadius: '8px',
   },
   infoLabel: {
-    fontSize: '14px',
-    color: '#6b7280',
+    fontFamily: "'Inter', 'Noto Sans SC', sans-serif",
+    fontSize: '12px',
+    color: 'rgba(45, 45, 45, 0.7)',
     fontWeight: 500,
+    letterSpacing: '0.02em',
   },
   infoValue: {
-    fontSize: '14px',
-    color: '#111827',
-    fontWeight: 500,
-    fontFamily: 'monospace',
+    fontFamily: "'Inter', 'Noto Sans SC', sans-serif",
+    fontSize: '13px',
+    color: 'rgba(45, 45, 45, 0.9)',
+    fontWeight: 600,
   },
   settlementGrid: {
     display: 'flex',
@@ -623,9 +610,10 @@ const styles: Record<string, React.CSSProperties> = {
     opacity: 0.8,
   },
   actionsSection: {
-    marginTop: '24px',
-    paddingTop: '24px',
-    borderTop: '1px solid #e5e7eb',
+    padding: '16px',
+    background: 'rgba(255, 255, 255, 0.25)',
+    borderRadius: '12px',
+    backdropFilter: 'blur(4px)',
   },
   centerText: {
     textAlign: 'center',
@@ -633,7 +621,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   loadingText: {
     fontSize: '16px',
-    color: '#6b7280',
+    color: '#2D2D2D',
   },
   centerActions: {
     marginTop: '16px',
