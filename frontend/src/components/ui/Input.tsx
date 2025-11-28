@@ -17,13 +17,16 @@ export function Input({
 }: InputProps) {
   const inputStyles: React.CSSProperties = {
     width: fullWidth ? '100%' : 'auto',
-    padding: '10px 12px',
-    fontSize: '16px',
-    border: `1px solid ${error ? '#ef4444' : '#d1d5db'}`,
+    padding: '9px 12px',
+    fontSize: '15px',
+    border: `1px solid ${error ? '#ef4444' : 'rgba(26, 26, 26, 0.12)'}`,
     borderRadius: '8px',
     outline: 'none',
-    transition: 'border-color 0.2s',
+    transition: 'all 0.2s',
     fontFamily: 'inherit',
+    backgroundColor: '#FFFFFF',
+    color: '#1A1A1A',
+    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
   };
 
   return (
@@ -32,10 +35,11 @@ export function Input({
         <label
           style={{
             display: 'block',
-            marginBottom: '6px',
-            fontSize: '14px',
-            fontWeight: 500,
-            color: '#374151',
+            marginBottom: '5px',
+            fontSize: '12px',
+            fontWeight: 600,
+            color: '#1A1A1A',
+            letterSpacing: '0.02em',
           }}
         >
           {label}
@@ -44,10 +48,12 @@ export function Input({
       <input
         style={inputStyles}
         onFocus={(e) => {
-          e.currentTarget.style.borderColor = error ? '#ef4444' : '#2563eb';
+          e.currentTarget.style.borderColor = error ? '#ef4444' : '#FF6B35';
+          e.currentTarget.style.boxShadow = error ? '0 2px 6px rgba(239, 68, 68, 0.15)' : '0 2px 6px rgba(255, 107, 53, 0.15)';
         }}
         onBlur={(e) => {
-          e.currentTarget.style.borderColor = error ? '#ef4444' : '#d1d5db';
+          e.currentTarget.style.borderColor = error ? '#ef4444' : 'rgba(26, 26, 26, 0.12)';
+          e.currentTarget.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.05)';
         }}
         {...props}
       />
@@ -94,15 +100,18 @@ export function TextArea({
 }: TextAreaProps) {
   const textareaStyles: React.CSSProperties = {
     width: fullWidth ? '100%' : 'auto',
-    padding: '10px 12px',
-    fontSize: '16px',
-    border: `1px solid ${error ? '#ef4444' : '#d1d5db'}`,
+    padding: '9px 12px',
+    fontSize: '15px',
+    border: `1px solid ${error ? '#ef4444' : 'rgba(26, 26, 26, 0.12)'}`,
     borderRadius: '8px',
     outline: 'none',
-    transition: 'border-color 0.2s',
+    transition: 'all 0.2s',
     fontFamily: 'inherit',
     resize: 'vertical',
-    minHeight: '100px',
+    minHeight: '90px',
+    backgroundColor: '#FFFFFF',
+    color: '#1A1A1A',
+    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
   };
 
   return (
@@ -111,10 +120,11 @@ export function TextArea({
         <label
           style={{
             display: 'block',
-            marginBottom: '6px',
-            fontSize: '14px',
-            fontWeight: 500,
-            color: '#374151',
+            marginBottom: '5px',
+            fontSize: '12px',
+            fontWeight: 600,
+            color: '#1A1A1A',
+            letterSpacing: '0.02em',
           }}
         >
           {label}
@@ -123,10 +133,12 @@ export function TextArea({
       <textarea
         style={textareaStyles}
         onFocus={(e) => {
-          e.currentTarget.style.borderColor = error ? '#ef4444' : '#2563eb';
+          e.currentTarget.style.borderColor = error ? '#ef4444' : '#FF6B35';
+          e.currentTarget.style.boxShadow = error ? '0 2px 6px rgba(239, 68, 68, 0.15)' : '0 2px 6px rgba(255, 107, 53, 0.15)';
         }}
         onBlur={(e) => {
-          e.currentTarget.style.borderColor = error ? '#ef4444' : '#d1d5db';
+          e.currentTarget.style.borderColor = error ? '#ef4444' : 'rgba(26, 26, 26, 0.12)';
+          e.currentTarget.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.05)';
         }}
         {...props}
       />

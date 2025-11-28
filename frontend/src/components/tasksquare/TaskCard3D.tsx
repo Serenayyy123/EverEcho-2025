@@ -1,7 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import Lottie from 'lottie-react';
 import { Task } from '../../hooks/useTasks';
-import { getCategoryFullTheme } from '../../utils/categoryTheme';
+import { getCategoryFullTheme, getCategoryAnimation } from '../../utils/categoryTheme';
 
 interface TaskCard3DProps {
   task: Task;
@@ -13,6 +14,16 @@ interface TaskCard3DProps {
 export function TaskCard3D({ task, index, activeIndex, totalCards }: TaskCard3DProps) {
   const navigate = useNavigate();
   const theme = getCategoryFullTheme(task.metadata?.category);
+  const animationPath = getCategoryAnimation(task.metadata?.category);
+  const [animationData, setAnimationData] = React.useState<any>(null);
+  
+  // 加载动画数据
+  React.useEffect(() => {
+    fetch(animationPath)
+      .then(res => res.json())
+      .then(data => setAnimationData(data))
+      .catch(err => console.error('Failed to load animation:', err));
+  }, [animationPath]);
   
   // Debug: 打印任务和主题信息
   if (index === activeIndex) {
@@ -20,6 +31,7 @@ export function TaskCard3D({ task, index, activeIndex, totalCards }: TaskCard3DP
       taskId: task.taskId,
       category: task.metadata?.category,
       theme: theme,
+      animation: animationPath,
     });
   }
   
@@ -71,18 +83,26 @@ export function TaskCard3D({ task, index, activeIndex, totalCards }: TaskCard3DP
       <div
         style={{
           ...styles.card,
-          background: `
-            radial-gradient(120% 120% at 20% 0%, rgba(255,255,255,0.06), transparent 55%),
-            linear-gradient(180deg, rgba(255,255,255,0.04), transparent 35%),
-            ${theme.bg}
-          `,
+          background: theme.bg,
           borderColor: theme.border,
           boxShadow: isActive
-            ? `0 12px 40px rgba(0,0,0,0.65), inset 0 0 0 1px rgba(255,255,255,0.05), inset 0 0 32px ${theme.glow}`
-            : `0 8px 30px rgba(0,0,0,0.55), inset 0 0 0 1px rgba(255,255,255,0.02)`,
-          filter: isActive ? 'brightness(1)' : 'brightness(0.7)',
+            ? `0 12px 40px rgba(0,0,0,0.3), 0 4px 12px rgba(0,0,0,0.2)`
+            : `0 8px 24px rgba(0,0,0,0.2)`,
+          filter: isActive ? 'brightness(1)' : 'brightness(0.85)',
         }}
       >
+        {/* Lottie Animation */}
+        {animationData && (
+          <div style={styles.animationContainer}>
+            <Lottie
+              animationData={animationData}
+              loop={true}
+              autoplay={isActive}
+              style={styles.animation}
+            />
+          </div>
+        )}
+
         {/* Category Tag */}
         <div
           style={{
@@ -100,22 +120,24 @@ export function TaskCard3D({ task, index, activeIndex, totalCards }: TaskCard3DP
 
         {/* Title */}
         <h3 style={{ ...styles.title, color: theme.text }}>
-          {task.metadata?.title || `TASK #${task.taskId}`}
+          {task.metadata?.title || `Task #${task.taskId}`}
         </h3>
 
         {/* Description */}
         {task.metadata?.description && (
-          <p style={styles.description}>
+          <p style={{ ...styles.description, color: `${theme.text}cc` }}>
             {task.metadata.description.length > 100
               ? `${task.metadata.description.slice(0, 100)}...`
               : task.metadata.description}
           </p>
         )}
 
-        {/* Reward */}
-        <div style={styles.rewardSection}>
-          <div style={styles.rewardAmount}>{task.reward}</div>
-          <div style={styles.rewardLabel}>ECHO</div>
+        {/* Reward - 特殊样式 */}
+        <div style={styles.rewardContainer}>
+          <div style={styles.rewardBox}>
+            <span style={{ ...styles.rewardAmount, color: theme.text }}>{task.reward}</span>
+            <span style={{ ...styles.rewardLabel, color: `${theme.text}99` }}>ECHO</span>
+          </div>
         </div>
 
         {/* Meta Info */}
@@ -158,7 +180,7 @@ const styles: Record<string, React.CSSProperties> = {
   cardWrapper: {
     position: 'absolute',
     width: '360px',
-    height: '480px',
+    height: '520px',
     transition: 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
     cursor: 'pointer',
   },
@@ -166,68 +188,89 @@ const styles: Record<string, React.CSSProperties> = {
     width: '100%',
     height: '100%',
     border: '1px solid',
-    borderRadius: '20px',
-    padding: '28px',
+    borderRadius: '24px',
+    padding: '32px',
     display: 'flex',
     flexDirection: 'column',
-    gap: '20px',
+    gap: '16px',
     position: 'relative',
     overflow: 'hidden',
     transition: 'all 0.4s ease',
   },
+  animationContainer: {
+    width: '100%',
+    height: '180px',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: '8px',
+  },
+  animation: {
+    width: '160px',
+    height: '160px',
+  },
   categoryTag: {
+    fontFamily: "'Inter', 'Noto Sans SC', sans-serif",
     position: 'absolute',
     top: '20px',
     right: '20px',
     padding: '6px 14px',
     borderRadius: '20px',
-    fontSize: '10px',
-    fontWeight: 700,
-    letterSpacing: '0.1em',
-    color: '#fff',
+    fontSize: '11px',
+    fontWeight: 500,
+    letterSpacing: '0.05em',
+    color: 'rgba(45, 45, 45, 0.8)',
   },
   statusBadge: {
+    fontFamily: "'Inter', 'Noto Sans SC', sans-serif",
     alignSelf: 'flex-start',
     padding: '4px 12px',
     borderRadius: '12px',
-    fontSize: '9px',
+    fontSize: '10px',
     fontWeight: 600,
-    letterSpacing: '0.12em',
-    border: '1px solid rgba(255, 255, 255, 0.15)',
+    letterSpacing: '0.08em',
+    border: '1px solid rgba(45, 45, 45, 0.15)',
   },
   title: {
-    fontSize: '22px',
-    fontWeight: 700,
-    letterSpacing: '0.02em',
+    fontFamily: "'Inter', 'Noto Sans SC', sans-serif",
+    fontSize: '20px',
+    fontWeight: 600,
+    letterSpacing: '-0.01em',
     margin: 0,
     lineHeight: 1.3,
-    minHeight: '60px',
+    minHeight: '54px',
   },
   description: {
-    fontSize: '13px',
-    lineHeight: 1.6,
-    color: 'rgba(255, 255, 255, 0.6)',
+    fontFamily: "'Inter', 'Noto Sans SC', sans-serif",
+    fontSize: '14px',
+    lineHeight: 1.5,
     margin: 0,
     flex: 1,
   },
-  rewardSection: {
-    display: 'flex',
+  rewardContainer: {
+    paddingTop: '16px',
+    borderTop: '1px solid rgba(45, 45, 45, 0.12)',
+  },
+  rewardBox: {
+    display: 'inline-flex',
     alignItems: 'baseline',
-    gap: '8px',
-    paddingTop: '12px',
-    borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+    gap: '6px',
+    padding: '6px 14px',
+    background: 'rgba(255, 255, 255, 0.25)',
+    borderRadius: '10px',
+    backdropFilter: 'blur(4px)',
   },
   rewardAmount: {
-    fontSize: '32px',
-    fontWeight: 700,
-    color: '#ffffff',
+    fontFamily: "'Inter', 'Noto Sans SC', sans-serif",
+    fontSize: '28px',
+    fontWeight: 800,
     letterSpacing: '-0.02em',
   },
   rewardLabel: {
-    fontSize: '12px',
-    fontWeight: 500,
-    color: 'rgba(255, 255, 255, 0.5)',
-    letterSpacing: '0.08em',
+    fontFamily: "'Inter', 'Noto Sans SC', sans-serif",
+    fontSize: '13px',
+    fontWeight: 600,
+    letterSpacing: '0.05em',
   },
   metaSection: {
     display: 'flex',
@@ -240,16 +283,17 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center',
   },
   metaLabel: {
-    fontSize: '10px',
-    fontWeight: 600,
-    letterSpacing: '0.1em',
-    color: 'rgba(255, 255, 255, 0.4)',
-  },
-  metaValue: {
+    fontFamily: "'Inter', 'Noto Sans SC', sans-serif",
     fontSize: '11px',
     fontWeight: 500,
-    color: 'rgba(255, 255, 255, 0.7)',
-    fontFamily: 'monospace',
+    letterSpacing: '0.05em',
+    color: 'rgba(45, 45, 45, 0.5)',
+  },
+  metaValue: {
+    fontFamily: "'Inter', 'Noto Sans SC', sans-serif",
+    fontSize: '11px',
+    fontWeight: 500,
+    color: 'rgba(45, 45, 45, 0.75)',
   },
   glowBorder: {
     position: 'absolute',

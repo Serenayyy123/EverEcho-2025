@@ -5,6 +5,7 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   size?: 'sm' | 'md' | 'lg';
   loading?: boolean;
   fullWidth?: boolean;
+  theme?: 'dark' | 'light'; // 新增：支持主题切换
 }
 
 export function Button({
@@ -15,6 +16,7 @@ export function Button({
   fullWidth = false,
   disabled,
   className = '',
+  theme = 'dark', // 默认深色主题
   ...props
 }: ButtonProps) {
   const baseStyles: React.CSSProperties = {
@@ -31,29 +33,65 @@ export function Button({
     opacity: disabled || loading ? 0.6 : 1,
   };
 
-  const variantStyles: Record<string, React.CSSProperties> = {
+  // 深色主题样式（原有样式）
+  const darkVariantStyles: Record<string, React.CSSProperties> = {
+    primary: {
+      backgroundColor: 'rgba(102, 126, 234, 0.8)',
+      color: 'white',
+      border: '1px solid rgba(102, 126, 234, 0.5)',
+    },
+    secondary: {
+      backgroundColor: 'rgba(107, 114, 128, 0.3)',
+      color: '#e5e7eb',
+      border: '1px solid rgba(255, 255, 255, 0.2)',
+    },
+    success: {
+      backgroundColor: 'rgba(16, 185, 129, 0.8)',
+      color: 'white',
+      border: '1px solid rgba(16, 185, 129, 0.5)',
+    },
+    danger: {
+      backgroundColor: 'rgba(239, 68, 68, 0.8)',
+      color: 'white',
+      border: '1px solid rgba(239, 68, 68, 0.5)',
+    },
+    ghost: {
+      backgroundColor: 'transparent',
+      color: 'rgba(255, 255, 255, 0.7)',
+      border: '1px solid rgba(255, 255, 255, 0.2)',
+    },
+  };
+
+  // 浅色主题样式（适配 TaskSquareV2 风格）
+  const lightVariantStyles: Record<string, React.CSSProperties> = {
     primary: {
       backgroundColor: '#2563eb',
       color: 'white',
+      border: '1px solid #2563eb',
     },
     secondary: {
-      backgroundColor: '#6b7280',
-      color: 'white',
+      backgroundColor: 'rgba(26, 26, 26, 0.08)',
+      color: '#1A1A1A',
+      border: '1px solid rgba(26, 26, 26, 0.12)',
     },
     success: {
-      backgroundColor: '#10b981',
+      backgroundColor: '#FF6B35',
       color: 'white',
+      border: '1px solid #FF6B35',
     },
     danger: {
       backgroundColor: '#ef4444',
       color: 'white',
+      border: '1px solid #ef4444',
     },
     ghost: {
       backgroundColor: 'transparent',
-      color: '#2563eb',
-      border: '1px solid #2563eb',
+      color: '#1A1A1A',
+      border: '1px solid rgba(26, 26, 26, 0.12)',
     },
   };
+
+  const variantStyles = theme === 'light' ? lightVariantStyles : darkVariantStyles;
 
   const sizeStyles: Record<string, React.CSSProperties> = {
     sm: {
