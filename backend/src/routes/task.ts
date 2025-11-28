@@ -342,52 +342,70 @@ router.get('/:taskId', async (req: Request, res: Response) => {
       });
     }
 
-    // 从链上读取 creator 和 helper 地址（带超时）
-    try {
-      const provider = new ethers.JsonRpcProvider(process.env.RPC_URL);
-      const contract = new ethers.Contract(
-        process.env.TASK_ESCROW_ADDRESS!,
-        ['function tasks(uint256) view returns (uint256 taskId, address creator, address helper, uint256 reward, string taskURI, uint8 status, uint256 createdAt, uint256 acceptedAt, uint256 submittedAt, address terminateRequestedBy, uint256 terminateRequestedAt, bool fixRequested, uint256 fixRequestedAt)'],
-        provider
-      );
-
-      // 设置 10 秒超时（Alchemy 免费套餐可能较慢）
-      const taskOnChain = await Promise.race([
-        contract.tasks(taskId),
-        new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('RPC timeout')), 10000)
-        ),
-      ]);
-      
-      const creator = (taskOnChain as any)[1];
-      const helper = (taskOnChain as any)[2];
-
-      // 查询 creator 和 helper 的昵称
+    // 优化：优先从数据库返回，异步补充链上数据
+    // 如果数据库中有 creator，直接使用；否则从链上读取
+    if (task.creator) {
+      // 快速路径：直接查询昵称
       const creatorProfile = await prisma.profile.findUnique({
-        where: { address: creator },
+        where: { address: task.creator },
         select: { nickname: true },
       });
 
-      let helperProfile = null;
-      if (helper !== ethers.ZeroAddress) {
-        helperProfile = await prisma.profile.findUnique({
-          where: { address: helper },
-          select: { nickname: true },
-        });
-      }
-
-      // 返回任务数据 + 昵称
       res.status(200).json({
         ...task,
-        creator,
+        creator: task.creator,
         creatorNickname: creatorProfile?.nickname || null,
-        helper,
-        helperNickname: helperProfile?.nickname || null,
+        helper: null, // 简化：不查询 helper（前端会从链上获取）
+        helperNickname: null,
       });
-    } catch (chainError) {
-      // 如果链上读取失败，仍然返回任务数据（不包含昵称）
-      console.warn(`Failed to read chain data for task ${taskId}:`, chainError);
-      res.status(200).json(task);
+    } else {
+      // 慢速路径：需要从链上读取（仅在数据库缺失时）
+      try {
+        const provider = new ethers.JsonRpcProvider(process.env.RPC_URL);
+        const contract = new ethers.Contract(
+          process.env.TASK_ESCROW_ADDRESS!,
+          ['function tasks(uint256) view returns (uint256 taskId, address creator, address helper, uint256 reward, string taskURI, uint8 status, uint256 createdAt, uint256 acceptedAt, uint256 submittedAt, address terminateRequestedBy, uint256 terminateRequestedAt, bool fixRequested, uint256 fixRequestedAt)'],
+          provider
+        );
+
+        // 减少超时到 3 秒
+        const taskOnChain = await Promise.race([
+          contract.tasks(taskId),
+          new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('RPC timeout')), 3000)
+          ),
+        ]);
+        
+        const creator = (taskOnChain as any)[1];
+        const helper = (taskOnChain as any)[2];
+
+        // 查询 creator 和 helper 的昵称
+        const creatorProfile = await prisma.profile.findUnique({
+          where: { address: creator },
+          select: { nickname: true },
+        });
+
+        let helperProfile = null;
+        if (helper !== ethers.ZeroAddress) {
+          helperProfile = await prisma.profile.findUnique({
+            where: { address: helper },
+            select: { nickname: true },
+          });
+        }
+
+        // 返回任务数据 + 昵称
+        res.status(200).json({
+          ...task,
+          creator,
+          creatorNickname: creatorProfile?.nickname || null,
+          helper,
+          helperNickname: helperProfile?.nickname || null,
+        });
+      } catch (chainError) {
+        // 如果链上读取失败，仍然返回任务数据（不包含昵称）
+        console.warn(`Failed to read chain data for task ${taskId}:`, chainError);
+        res.status(200).json(task);
+      }
     }
   } catch (error) {
     console.error('Error fetching task:', error);
