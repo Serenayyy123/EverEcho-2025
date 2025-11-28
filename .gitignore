@@ -84,6 +84,7 @@ Desktop.ini
 *.temp
 .cache/
 .parcel-cache/
+frontend/.vite/
 
 # Hardhat
 cache/
