@@ -23,17 +23,22 @@ export function PageLayout({ children, title, showNav = true, maxWidth = 'lg' }:
 
   const containerStyles: React.CSSProperties = {
     minHeight: '100vh',
-    backgroundColor: '#f9fafb',
+    backgroundColor: '#0a0a0f',
   };
 
   const headerStyles: React.CSSProperties = {
-    backgroundColor: 'white',
-    borderBottom: '1px solid #e5e7eb',
-    padding: '16px 24px',
+    backgroundColor: '#0d0d0d',
+    borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+    padding: '0 32px',
+    height: '64px',
+    display: 'flex',
+    alignItems: 'center',
+    backdropFilter: 'blur(10px)',
   };
 
   const headerContentStyles: React.CSSProperties = {
     maxWidth: maxWidthValues[maxWidth],
+    width: '100%',
     margin: '0 auto',
     display: 'flex',
     justifyContent: 'space-between',
@@ -41,25 +46,43 @@ export function PageLayout({ children, title, showNav = true, maxWidth = 'lg' }:
   };
 
   const logoStyles: React.CSSProperties = {
-    fontSize: '24px',
+    fontSize: '22px',
     fontWeight: 700,
-    color: '#2563eb',
+    fontFamily: '"Comic Sans MS", "Chalkboard SE", "Bradley Hand", cursive',
     cursor: 'pointer',
     margin: 0,
+    padding: '10px 20px',
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    borderRadius: '6px',
+    border: '1px solid rgba(255, 255, 255, 0.08)',
+    transition: 'all 0.2s ease',
+    letterSpacing: '0.5px',
+  };
+
+  const logoOrangeStyles: React.CSSProperties = {
+    color: '#FF6B35',
+  };
+
+  const logoWhiteStyles: React.CSSProperties = {
+    color: '#FFFFFF',
   };
 
   const navStyles: React.CSSProperties = {
     display: 'flex',
-    gap: '12px',
+    gap: '8px',
     alignItems: 'center',
+    marginLeft: '60px',
+    flex: 1,
   };
 
   const addressStyles: React.CSSProperties = {
-    fontSize: '14px',
-    color: '#6b7280',
-    padding: '8px 12px',
-    backgroundColor: '#f3f4f6',
+    fontSize: '13px',
+    color: '#d1d5db',
+    padding: '8px 14px',
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
     borderRadius: '6px',
+    border: '1px solid rgba(255, 255, 255, 0.1)',
+    marginLeft: 'auto',
   };
 
   const mainStyles: React.CSSProperties = {
@@ -84,7 +107,8 @@ export function PageLayout({ children, title, showNav = true, maxWidth = 'lg' }:
         <header style={headerStyles}>
           <div style={headerContentStyles}>
             <h1 style={logoStyles} onClick={() => navigate('/')}>
-              EverEcho
+              <span style={logoOrangeStyles}>Ever</span>
+              <span style={logoWhiteStyles}>Echo</span>
             </h1>
             <nav style={navStyles}>
               {address ? (
@@ -93,6 +117,12 @@ export function PageLayout({ children, title, showNav = true, maxWidth = 'lg' }:
                     variant="ghost"
                     size="sm"
                     onClick={() => navigate('/tasks')}
+                    style={{
+                      color: 'rgba(255, 255, 255, 0.85)',
+                      fontSize: '14px',
+                      fontWeight: 500,
+                      padding: '8px 16px',
+                    }}
                   >
                     Tasks
                   </Button>
@@ -100,6 +130,12 @@ export function PageLayout({ children, title, showNav = true, maxWidth = 'lg' }:
                     variant="ghost"
                     size="sm"
                     onClick={() => navigate('/publish')}
+                    style={{
+                      color: 'rgba(255, 255, 255, 0.85)',
+                      fontSize: '14px',
+                      fontWeight: 500,
+                      padding: '8px 16px',
+                    }}
                   >
                     Publish
                   </Button>
@@ -107,11 +143,23 @@ export function PageLayout({ children, title, showNav = true, maxWidth = 'lg' }:
                     variant="ghost"
                     size="sm"
                     onClick={() => navigate('/profile')}
+                    style={{
+                      color: 'rgba(255, 255, 255, 0.85)',
+                      fontSize: '14px',
+                      fontWeight: 500,
+                      padding: '8px 16px',
+                    }}
                   >
                     Profile
                   </Button>
                   <div style={addressStyles}>
-                    <div style={{ fontSize: '10px', color: '#9ca3af', marginBottom: '2px' }}>
+                    <div style={{ 
+                      fontSize: '10px', 
+                      color: '#9ca3af', 
+                      marginBottom: '2px',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.5px',
+                    }}>
                       {getChainName(chainId)}
                     </div>
                     {address.slice(0, 6)}...{address.slice(-4)}
@@ -120,6 +168,10 @@ export function PageLayout({ children, title, showNav = true, maxWidth = 'lg' }:
                     variant="danger"
                     size="sm"
                     onClick={disconnect}
+                    style={{
+                      fontSize: '13px',
+                      padding: '8px 14px',
+                    }}
                   >
                     Disconnect
                   </Button>
@@ -144,6 +196,7 @@ export function PageLayout({ children, title, showNav = true, maxWidth = 'lg' }:
             style={{
               fontSize: '28px',
               fontWeight: 700,
+              fontFamily: '"Comic Sans MS", "Chalkboard SE", "Bradley Hand", cursive',
               marginBottom: '24px',
               color: '#111827',
             }}

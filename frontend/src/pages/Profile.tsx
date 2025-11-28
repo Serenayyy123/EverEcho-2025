@@ -7,8 +7,7 @@ import { useTaskStats } from '../hooks/useTaskStats';
 import { TaskHistory } from '../components/TaskHistory';
 import { formatECHO } from '../utils/formatters';
 import { printDemoSeed } from '../utils/demoSeed';
-import { PageLayout } from '../components/layout/PageLayout';
-import { Card } from '../components/ui/Card';
+import { DarkPageLayout } from '../components/layout/DarkPageLayout';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
 import { Alert } from '../components/ui/Alert';
@@ -263,18 +262,18 @@ export function Profile() {
 
   if (!address) {
     return (
-      <PageLayout title="Profile">
-        <Card>
+      <DarkPageLayout title="Profile" theme="light">
+        <div style={styles.profileCard}>
           <Alert variant="warning">
             Please connect your wallet to view your profile.
           </Alert>
-        </Card>
-      </PageLayout>
+        </div>
+      </DarkPageLayout>
     );
   }
 
   return (
-    <PageLayout title="My Profile">
+    <DarkPageLayout title="My Profile" theme="light">
       <NetworkGuard chainId={chainId}>
         <div style={styles.container}>
           {/* Demo Seed Button (Dev only) */}
@@ -285,6 +284,7 @@ export function Profile() {
                 size="sm"
                 onClick={handleDemoSeed}
                 loading={seedLoading}
+                theme="light"
               >
                 🎯 Demo Seed
               </Button>
@@ -295,7 +295,7 @@ export function Profile() {
           )}
 
           {/* Profile Card */}
-          <Card>
+          <div style={styles.profileCard}>
             {profileLoading && (
               <div style={styles.centerText}>
                 <p style={styles.loadingText}>Loading profile...</p>
@@ -312,8 +312,9 @@ export function Profile() {
                     Make sure you have registered.
                   </p>
                   <Button
-                    variant="primary"
+                    variant="secondary"
                     onClick={() => navigate('/register')}
+                    theme="light"
                   >
                     Go to Register
                   </Button>
@@ -360,6 +361,7 @@ export function Profile() {
                               onClick={handleRestoreOffchain}
                               loading={restoreLoading}
                               disabled={restoreLoading}
+                              theme="light"
                             >
                               Restore profile (off-chain)
                             </Button>
@@ -397,7 +399,7 @@ export function Profile() {
                 {ENABLE_PROFILE_EDIT && (
                   <div style={styles.editActions}>
                     {!isEditing ? (
-                      <Button variant="secondary" size="sm" onClick={handleEdit}>
+                      <Button variant="secondary" size="sm" onClick={handleEdit} theme="light">
                         ✏️ Edit Profile
                       </Button>
                     ) : (
@@ -408,6 +410,7 @@ export function Profile() {
                           onClick={handleSave}
                           loading={isSaving}
                           disabled={isSaving}
+                          theme="light"
                         >
                           💾 Save
                         </Button>
@@ -416,6 +419,7 @@ export function Profile() {
                           size="sm"
                           onClick={handleCancel}
                           disabled={isSaving}
+                          theme="light"
                         >
                           ✖️ Cancel
                         </Button>
@@ -498,6 +502,7 @@ export function Profile() {
                           size="sm"
                           onClick={handleAddSkill}
                           disabled={!newSkill.trim()}
+                          theme="light"
                         >
                           ➕ Add
                         </Button>
@@ -557,20 +562,20 @@ export function Profile() {
                 )}
               </>
             )}
-          </Card>
+          </div>
 
           {/* Task Statistics */}
           {!profileLoading && !profileError && profile && (
             <div style={styles.statsCardsContainer}>
               <div style={styles.statsCard}>
                 <div style={styles.statsNumber}>
-                  {statsLoading ? '...' : stats.createdCount}
+                  {statsLoading ? '...' : `+${stats.createdCount}`}
                 </div>
                 <div style={styles.statsLabel}>Tasks I Created</div>
               </div>
               <div style={styles.statsCard}>
                 <div style={styles.statsNumber}>
-                  {statsLoading ? '...' : stats.helpedCount}
+                  {statsLoading ? '...' : `+${stats.helpedCount}`}
                 </div>
                 <div style={styles.statsLabel}>Tasks I Helped</div>
               </div>
@@ -579,7 +584,7 @@ export function Profile() {
 
           {/* Task History */}
           {!profileLoading && !profileError && profile && (
-            <Card>
+            <div style={styles.profileCard}>
               <div style={styles.historySection}>
                 <h3 style={styles.historyTitle}>Task History</h3>
                 
@@ -589,6 +594,8 @@ export function Profile() {
                     variant={activeTab === 'creator' ? 'primary' : 'ghost'}
                     size="sm"
                     onClick={() => setActiveTab('creator')}
+                    theme="light"
+                    style={activeTab === 'creator' ? styles.activeTabButton : styles.inactiveTabButton}
                   >
                     Tasks I Created ({stats.createdCount})
                   </Button>
@@ -596,6 +603,8 @@ export function Profile() {
                     variant={activeTab === 'helper' ? 'primary' : 'ghost'}
                     size="sm"
                     onClick={() => setActiveTab('helper')}
+                    theme="light"
+                    style={activeTab === 'helper' ? styles.activeTabButton : styles.inactiveTabButton}
                   >
                     Tasks I Helped ({stats.helpedCount})
                   </Button>
@@ -611,11 +620,11 @@ export function Profile() {
                   />
                 </div>
               </div>
-            </Card>
+            </div>
           )}
         </div>
       </NetworkGuard>
-    </PageLayout>
+    </DarkPageLayout>
   );
 }
 
@@ -625,6 +634,12 @@ const styles: Record<string, React.CSSProperties> = {
     flexDirection: 'column',
     gap: '24px',
   },
+  profileCard: {
+    backgroundColor: '#FFFEF8',
+    borderRadius: '12px',
+    padding: '32px',
+    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
+  },
   demoSeedSection: {
     display: 'flex',
     alignItems: 'center',
@@ -632,7 +647,7 @@ const styles: Record<string, React.CSSProperties> = {
     padding: '12px 16px',
     backgroundColor: '#fef3c7',
     border: '1px solid #fde68a',
-    borderRadius: '8px',
+    borderRadius: '10px',
   },
   demoHint: {
     fontSize: '14px',
@@ -644,7 +659,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   loadingText: {
     fontSize: '16px',
-    color: '#6b7280',
+    color: '#4A4A4A',
   },
   centerActions: {
     marginTop: '16px',
@@ -655,7 +670,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   hint: {
     fontSize: '14px',
-    color: '#6b7280',
+    color: '#4A4A4A',
     textAlign: 'center',
   },
   profileHeader: {
@@ -664,8 +679,6 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'flex-start',
     gap: '24px',
     marginBottom: '32px',
-    paddingBottom: '24px',
-    borderBottom: '1px solid #e5e7eb',
   },
   avatarSection: {
     display: 'flex',
@@ -692,12 +705,12 @@ const styles: Record<string, React.CSSProperties> = {
   nickname: {
     fontSize: '28px',
     fontWeight: 700,
-    color: '#111827',
+    color: '#4B5563',
     margin: '0 0 8px 0',
   },
   address: {
     fontSize: '14px',
-    color: '#6b7280',
+    color: '#4A4A4A',
     margin: 0,
     fontFamily: 'monospace',
   },
@@ -710,11 +723,11 @@ const styles: Record<string, React.CSSProperties> = {
   balanceAmount: {
     fontSize: '36px',
     fontWeight: 700,
-    color: '#2563eb',
+    color: '#FF6B35',
   },
   balanceLabel: {
     fontSize: '14px',
-    color: '#6b7280',
+    color: '#4A4A4A',
     fontWeight: 500,
   },
   statsGrid: {
@@ -726,9 +739,9 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     gap: '16px',
     padding: '16px',
-    backgroundColor: '#f9fafb',
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
     borderRadius: '12px',
-    border: '1px solid #e5e7eb',
+    border: '1px solid rgba(26, 26, 26, 0.08)',
   },
   statIcon: {
     fontSize: '32px',
@@ -740,14 +753,18 @@ const styles: Record<string, React.CSSProperties> = {
     gap: '8px',
   },
   statLabel: {
-    fontSize: '14px',
-    color: '#6b7280',
-    fontWeight: 500,
+    fontSize: '12px',
+    color: '#9CA3AF',
+    fontWeight: 600,
+    letterSpacing: '0.08em',
+    textTransform: 'uppercase',
+    fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
   },
   statValue: {
     fontSize: '18px',
     fontWeight: 600,
-    color: '#111827',
+    color: '#6B7280',
+    fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
   },
   skillsContainer: {
     display: 'flex',
@@ -762,7 +779,7 @@ const styles: Record<string, React.CSSProperties> = {
   historyTitle: {
     fontSize: '20px',
     fontWeight: 600,
-    color: '#111827',
+    color: '#1A1A1A',
     margin: 0,
   },
   tabs: {
@@ -778,30 +795,30 @@ const styles: Record<string, React.CSSProperties> = {
     gap: '16px',
   },
   statsCard: {
-    backgroundColor: '#fff',
-    border: '1px solid #e5e7eb',
-    borderRadius: '12px',
-    padding: '24px',
+    background: '#FFFEF8',
+    border: 'none',
+    borderRadius: '16px',
+    padding: '40px 24px',
     textAlign: 'center',
-    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
   },
   statsNumber: {
-    fontSize: '48px',
-    fontWeight: 700,
-    color: '#2563eb',
-    marginBottom: '8px',
+    fontSize: '56px',
+    fontWeight: 800,
+    color: '#FF6B35',
+    marginBottom: '12px',
+    lineHeight: 1,
   },
   statsLabel: {
     fontSize: '16px',
-    color: '#6b7280',
-    fontWeight: 500,
+    color: '#6B7280',
+    fontWeight: 600,
+    letterSpacing: '0.02em',
   },
   editActions: {
     display: 'flex',
     gap: '12px',
     marginBottom: '24px',
-    paddingBottom: '24px',
-    borderBottom: '1px solid #e5e7eb',
   },
   editForm: {
     display: 'flex',
@@ -815,9 +832,11 @@ const styles: Record<string, React.CSSProperties> = {
   },
   label: {
     display: 'block',
-    fontSize: '14px',
-    fontWeight: 500,
-    color: '#374151',
+    fontSize: '12px',
+    fontWeight: 600,
+    color: '#4A4A4A',
+    letterSpacing: '0.08em',
+    textTransform: 'uppercase',
   },
   skillsInputRow: {
     display: 'flex',
@@ -829,16 +848,17 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     gap: '8px',
     padding: '6px 12px',
-    backgroundColor: '#2563eb',
-    color: 'white',
-    borderRadius: '6px',
+    backgroundColor: 'rgba(37, 99, 235, 0.1)',
+    color: '#2563eb',
+    border: '1px solid rgba(37, 99, 235, 0.2)',
+    borderRadius: '8px',
     fontSize: '14px',
     fontWeight: 500,
   },
   skillRemove: {
     background: 'none',
     border: 'none',
-    color: 'white',
+    color: '#2563eb',
     cursor: 'pointer',
     fontSize: '12px',
     padding: '0 4px',
@@ -855,11 +875,12 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center',
   },
   select: {
-    padding: '8px 12px',
+    padding: '12px 16px',
     fontSize: '14px',
-    border: '1px solid #d1d5db',
-    borderRadius: '6px',
-    backgroundColor: 'white',
+    border: '1px solid rgba(26, 26, 26, 0.12)',
+    borderRadius: '10px',
+    backgroundColor: 'rgba(26, 26, 26, 0.05)',
+    color: '#1A1A1A',
     cursor: 'pointer',
     outline: 'none',
   },
@@ -868,18 +889,28 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     gap: '8px',
     padding: '8px 12px',
-    backgroundColor: '#f0f9ff',
-    border: '1px solid #bfdbfe',
-    borderRadius: '6px',
+    backgroundColor: 'rgba(37, 99, 235, 0.08)',
+    border: '1px solid rgba(37, 99, 235, 0.2)',
+    borderRadius: '8px',
   },
   previewLabel: {
     fontSize: '12px',
-    color: '#6b7280',
+    color: '#4A4A4A',
     fontWeight: 500,
   },
   previewValue: {
     fontSize: '14px',
-    color: '#1e40af',
+    color: '#2563eb',
     fontWeight: 600,
+  },
+  activeTabButton: {
+    backgroundColor: '#FF6B35',
+    color: '#FFFFFF',
+    border: 'none',
+  },
+  inactiveTabButton: {
+    backgroundColor: 'transparent',
+    color: '#6B7280',
+    border: '1px solid #E5E7EB',
   },
 };
