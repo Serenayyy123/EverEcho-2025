@@ -46,6 +46,7 @@ export interface TaskMetadata {
   description: string;
   contactsEncryptedPayload: string;
   createdAt: number | string; // 支持 number（后端）和 string（ISO）
+  category?: string; // 任务分类（可选）
 }
 
 /**

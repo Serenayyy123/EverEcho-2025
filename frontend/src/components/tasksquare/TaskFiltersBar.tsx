@@ -5,29 +5,40 @@ import { getCategoryTheme } from '../../utils/categoryTheme';
 interface TaskFiltersBarProps {
   selectedCategory: string;
   onCategoryChange: (category: string) => void;
+  selectedStatus: string;
+  onStatusChange: (status: string) => void;
   searchTerm: string;
   onSearchChange: (term: string) => void;
-  showOngoing: boolean;
-  onShowOngoingChange: (show: boolean) => void;
   sortBy: 'newest' | 'reward' | 'oldest';
   onSortChange: (sort: 'newest' | 'reward' | 'oldest') => void;
+  onRefresh?: () => void;
+  onPublish?: () => void;
+  refreshDisabled?: boolean;
 }
 
 export function TaskFiltersBar({
   selectedCategory,
   onCategoryChange,
+  selectedStatus,
+  onStatusChange,
   searchTerm,
   onSearchChange,
-  showOngoing,
-  onShowOngoingChange,
   sortBy,
   onSortChange,
+  onRefresh,
+  onPublish,
+  refreshDisabled,
 }: TaskFiltersBarProps) {
+  const statusOptions = [
+    { key: 'all', label: 'ALL' },
+    { key: 'open', label: 'OPEN' },
+    { key: 'active', label: 'ACTIVE' },
+    { key: 'completed', label: 'COMPLETED' },
+  ];
   return (
     <div style={styles.container}>
       {/* Category Chips */}
       <div style={styles.section}>
-        <label style={styles.label}>CATEGORY</label>
         <div style={styles.chipsRow}>
           <button
             style={{
@@ -64,7 +75,7 @@ export function TaskFiltersBar({
         </div>
       </div>
 
-      {/* Search & Sort Row */}
+      {/* Search & Sort & Actions Row */}
       <div style={styles.row}>
         <div style={styles.searchWrapper}>
           <input
@@ -74,6 +85,22 @@ export function TaskFiltersBar({
             placeholder="Search tasks..."
             style={styles.searchInput}
           />
+        </div>
+
+        {/* Status Dropdown */}
+        <div style={styles.sortWrapper}>
+          <label style={styles.label}>STATUS</label>
+          <select
+            value={selectedStatus}
+            onChange={(e) => onStatusChange(e.target.value)}
+            style={styles.select}
+          >
+            {statusOptions.map((opt) => (
+              <option key={opt.key} value={opt.key}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div style={styles.sortWrapper}>
@@ -89,15 +116,24 @@ export function TaskFiltersBar({
           </select>
         </div>
 
-        <label style={styles.toggleLabel}>
-          <input
-            type="checkbox"
-            checked={showOngoing}
-            onChange={(e) => onShowOngoingChange(e.target.checked)}
-            style={styles.checkbox}
-          />
-          <span style={styles.toggleText}>SHOW ONGOING</span>
-        </label>
+        {onRefresh && (
+          <button
+            style={styles.actionButton}
+            onClick={onRefresh}
+            disabled={refreshDisabled}
+          >
+            ↻ REFRESH
+          </button>
+        )}
+
+        {onPublish && (
+          <button
+            style={{ ...styles.actionButton, ...styles.primaryButton }}
+            onClick={onPublish}
+          >
+            📝 PUBLISH TASK
+          </button>
+        )}
       </div>
     </div>
   );
@@ -109,8 +145,8 @@ const styles: Record<string, React.CSSProperties> = {
     flexDirection: 'column',
     gap: '20px',
     padding: '24px',
-    background: 'rgba(14, 18, 26, 0.6)',
-    border: '1px solid rgba(255, 255, 255, 0.08)',
+    background: 'rgba(255, 255, 255, 0.5)',
+    border: '1px solid rgba(26, 26, 26, 0.08)',
     borderRadius: '16px',
     backdropFilter: 'blur(20px)',
   },
@@ -123,7 +159,7 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: '10px',
     fontWeight: 700,
     letterSpacing: '0.12em',
-    color: 'rgba(255, 255, 255, 0.5)',
+    color: '#4A4A4A',
   },
   chipsRow: {
     display: 'flex',
@@ -135,35 +171,76 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: '11px',
     fontWeight: 600,
     letterSpacing: '0.08em',
-    color: 'rgba(255, 255, 255, 0.7)',
-    background: 'rgba(255, 255, 255, 0.05)',
-    border: '1px solid rgba(255, 255, 255, 0.12)',
+    color: '#1A1A1A',
+    background: 'rgba(26, 26, 26, 0.05)',
+    border: '1px solid rgba(26, 26, 26, 0.12)',
     borderRadius: '20px',
     cursor: 'pointer',
     transition: 'all 0.3s ease',
     outline: 'none',
   },
   chipActive: {
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-    borderColor: 'rgba(255, 255, 255, 0.3)',
-    color: '#fff',
+    backgroundColor: 'rgba(26, 26, 26, 0.15)',
+    borderColor: 'rgba(26, 26, 26, 0.3)',
+    color: '#1A1A1A',
+  },
+  statusChip: {
+    padding: '8px 16px',
+    fontSize: '11px',
+    fontWeight: 600,
+    letterSpacing: '0.08em',
+    color: '#1A1A1A',
+    background: 'rgba(26, 26, 26, 0.05)',
+    border: '1px solid rgba(26, 26, 26, 0.12)',
+    borderRadius: '20px',
+    cursor: 'pointer',
+    transition: 'all 0.3s ease',
+    outline: 'none',
+  },
+  statusChipActive: {
+    backgroundColor: 'rgba(26, 26, 26, 0.15)',
+    borderColor: 'rgba(26, 26, 26, 0.3)',
+    color: '#1A1A1A',
+  },
+  statusChipCompact: {
+    padding: '6px 12px',
+    fontSize: '10px',
+    fontWeight: 600,
+    letterSpacing: '0.08em',
+    color: '#1A1A1A',
+    background: 'rgba(26, 26, 26, 0.05)',
+    border: '1px solid rgba(26, 26, 26, 0.12)',
+    borderRadius: '20px',
+    cursor: 'pointer',
+    transition: 'all 0.3s ease',
+    outline: 'none',
+    minWidth: '50px',
+    whiteSpace: 'nowrap',
+  },
+  statusChipCompactActive: {
+    backgroundColor: 'rgba(26, 26, 26, 0.15)',
+    borderColor: 'rgba(26, 26, 26, 0.3)',
+    color: '#1A1A1A',
   },
   row: {
     display: 'flex',
     gap: '16px',
     alignItems: 'flex-end',
+    flexWrap: 'wrap',
   },
   searchWrapper: {
     flex: 1,
+    maxWidth: '450px',
+    minWidth: '250px',
   },
   searchInput: {
     width: '100%',
     padding: '12px 16px',
     fontSize: '13px',
     fontWeight: 400,
-    color: 'rgba(255, 255, 255, 0.9)',
-    background: 'rgba(255, 255, 255, 0.05)',
-    border: '1px solid rgba(255, 255, 255, 0.12)',
+    color: '#1A1A1A',
+    background: 'rgba(26, 26, 26, 0.05)',
+    border: '1px solid rgba(26, 26, 26, 0.12)',
     borderRadius: '10px',
     outline: 'none',
     transition: 'all 0.3s ease',
@@ -172,41 +249,36 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     flexDirection: 'column',
     gap: '8px',
-    minWidth: '180px',
+    minWidth: '160px',
   },
   select: {
     padding: '12px 16px',
     fontSize: '11px',
     fontWeight: 600,
     letterSpacing: '0.08em',
-    color: 'rgba(255, 255, 255, 0.9)',
-    background: 'rgba(255, 255, 255, 0.05)',
-    border: '1px solid rgba(255, 255, 255, 0.12)',
+    color: '#1A1A1A',
+    background: 'rgba(26, 26, 26, 0.05)',
+    border: '1px solid rgba(26, 26, 26, 0.12)',
     borderRadius: '10px',
     cursor: 'pointer',
     outline: 'none',
   },
-  toggleLabel: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    cursor: 'pointer',
-    userSelect: 'none',
-    padding: '12px 16px',
-    background: 'rgba(255, 255, 255, 0.03)',
-    border: '1px solid rgba(255, 255, 255, 0.08)',
-    borderRadius: '10px',
-  },
-  checkbox: {
-    cursor: 'pointer',
-    width: '16px',
-    height: '16px',
-  },
-  toggleText: {
+  actionButton: {
+    padding: '12px 20px',
     fontSize: '11px',
     fontWeight: 600,
     letterSpacing: '0.08em',
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: '#1A1A1A',
+    background: 'rgba(26, 26, 26, 0.06)',
+    border: '1px solid rgba(26, 26, 26, 0.12)',
+    borderRadius: '10px',
+    cursor: 'pointer',
+    transition: 'all 0.3s ease',
+    outline: 'none',
     whiteSpace: 'nowrap',
+  },
+  primaryButton: {
+    background: 'rgba(26, 26, 26, 0.12)',
+    borderColor: 'rgba(26, 26, 26, 0.2)',
   },
 };

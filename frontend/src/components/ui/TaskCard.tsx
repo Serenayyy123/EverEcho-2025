@@ -154,7 +154,7 @@ const styles: Record<string, React.CSSProperties> = {
   title: {
     fontSize: '18px',
     fontWeight: 600,
-    color: '#111827',
+    color: '#FFFFFF',
     margin: 0,
     lineHeight: '1.4',
   },

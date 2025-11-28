@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useWallet } from '../hooks/useWallet';
 import { useProfile } from '../hooks/useProfile';
 import { useCreateTask } from '../hooks/useCreateTask';
-import { PageLayout } from '../components/layout/PageLayout';
+import { DarkPageLayout } from '../components/layout/DarkPageLayout';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Input, TextArea } from '../components/ui/Input';
@@ -91,18 +91,18 @@ export function PublishTask() {
 
   if (!address) {
     return (
-      <PageLayout title="Publish Task">
+      <DarkPageLayout title="Publish Task" theme="light">
         <Card>
           <Alert variant="warning">
             Please connect your wallet to publish a task.
           </Alert>
         </Card>
-      </PageLayout>
+      </DarkPageLayout>
     );
   }
 
   return (
-    <PageLayout title="Publish New Task">
+    <DarkPageLayout title="Publish New Task" theme="light">
       <NetworkGuard chainId={chainId}>
         <Card>
           <div style={styles.content}>
@@ -135,7 +135,7 @@ export function PublishTask() {
                   }
                 }}
                 placeholder="Describe the task in detail"
-                rows={5}
+                rows={4}
                 error={formErrors.description}
                 disabled={loading}
               />
@@ -161,7 +161,7 @@ export function PublishTask() {
 
               {/* Category Selection (Optional) */}
               <div style={styles.formGroup}>
-                <label style={styles.label}>Category (Optional)</label>
+                <label style={styles.label}>Category (optional)</label>
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value as TaskCategoryKey | '')}
@@ -182,7 +182,7 @@ export function PublishTask() {
 
               {/* 联系方式预览（从 Profile 自动获取） */}
               <div style={styles.contactsSection}>
-                <label style={styles.label}>Contact Information *</label>
+                <label style={styles.label}>Contact information *</label>
                 {profileLoading ? (
                   <div style={styles.contactsLoading}>
                     <p style={styles.loadingText}>Loading profile...</p>
@@ -235,11 +235,12 @@ export function PublishTask() {
 
               <Button
                 type="submit"
-                variant="success"
+                variant="secondary"
                 size="lg"
                 fullWidth
                 loading={loading}
                 disabled={loading || !profile?.contacts}
+                theme="light"
               >
                 Publish Task
               </Button>
@@ -247,25 +248,26 @@ export function PublishTask() {
           </div>
         </Card>
       </NetworkGuard>
-    </PageLayout>
+    </DarkPageLayout>
   );
 }
 
 const styles: Record<string, React.CSSProperties> = {
   content: {
-    maxWidth: '700px',
+    maxWidth: '650px',
     margin: '0 auto',
   },
   subtitle: {
     fontSize: '16px',
     textAlign: 'center',
-    color: '#6b7280',
+    color: '#D1D5DB',
+    fontWeight: 500,
     marginBottom: '32px',
   },
   form: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '24px',
+    gap: '20px',
   },
   contactsSection: {
     display: 'flex',
@@ -274,27 +276,29 @@ const styles: Record<string, React.CSSProperties> = {
   },
   label: {
     display: 'block',
-    fontSize: '14px',
-    fontWeight: 500,
-    color: '#374151',
-    marginBottom: '4px',
+    fontSize: '12px',
+    fontWeight: 600,
+    color: '#1A1A1A',
+    marginBottom: '5px',
+    letterSpacing: '0.02em',
   },
   contactsLoading: {
     padding: '16px',
-    backgroundColor: '#f9fafb',
-    borderRadius: '8px',
+    backgroundColor: 'rgba(26, 26, 26, 0.03)',
+    borderRadius: '10px',
     textAlign: 'center',
   },
   loadingText: {
     fontSize: '14px',
-    color: '#6b7280',
+    color: '#D1D5DB',
+    fontWeight: 500,
     margin: 0,
   },
   contactsPreview: {
     padding: '16px',
-    backgroundColor: '#f0f9ff',
-    border: '2px solid #bfdbfe',
-    borderRadius: '8px',
+    backgroundColor: 'rgba(37, 99, 235, 0.08)',
+    border: '1px solid rgba(37, 99, 235, 0.2)',
+    borderRadius: '10px',
   },
   contactsHeader: {
     display: 'flex',
@@ -308,11 +312,12 @@ const styles: Record<string, React.CSSProperties> = {
   contactsValue: {
     fontSize: '16px',
     fontWeight: 600,
-    color: '#1e40af',
+    color: '#1d4ed8',
   },
   contactsHint: {
     fontSize: '13px',
-    color: '#6b7280',
+    color: '#2D2D2D',
+    fontWeight: 500,
     margin: 0,
     lineHeight: '1.5',
   },
@@ -335,17 +340,20 @@ const styles: Record<string, React.CSSProperties> = {
     gap: '8px',
   },
   select: {
-    padding: '10px 12px',
+    padding: '12px 16px',
     fontSize: '14px',
-    border: '1px solid #d1d5db',
-    borderRadius: '8px',
-    backgroundColor: 'white',
+    fontWeight: 500,
+    border: '1px solid rgba(26, 26, 26, 0.12)',
+    borderRadius: '10px',
+    backgroundColor: 'rgba(26, 26, 26, 0.05)',
+    color: '#1A1A1A',
     cursor: 'pointer',
     outline: 'none',
   },
   hint: {
     fontSize: '12px',
-    color: '#6b7280',
+    color: '#9CA3AF',
+    fontWeight: 500,
     margin: 0,
   },
 };

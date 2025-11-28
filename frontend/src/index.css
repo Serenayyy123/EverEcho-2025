@@ -10,6 +10,8 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background: #F5F1E8;
+  color: #1A1A1A;
 }
 
 code {
@@ -28,3 +30,17 @@ button:active:not(:disabled) {
 input:focus {
   border-color: #007bff !important;
 }
+
+/* 浅色主题全局样式（已弃用dark-theme） */
+
+/* 下拉框选中项颜色优化 */
+select {
+  accent-color: #4A4A4A;
+}
+
+select option:checked {
+  background-color: rgba(74, 74, 74, 0.2);
+  color: #1A1A1A;
+}
+
+/* Profile 统计卡片 - 极简风格（无动画） */
