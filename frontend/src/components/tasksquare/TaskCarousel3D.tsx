@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+﻿import React, { useState, useRef, useEffect } from 'react';
 import { Task } from '../../hooks/useTasks';
 import { TaskCard3D } from './TaskCard3D';
 
@@ -28,7 +28,7 @@ export function TaskCarousel3D({ tasks }: TaskCarousel3DProps) {
     if (!isDragging) return;
     
     const diff = currentX - startX;
-    const threshold = 50; // 降低阈值，更容易触发
+    const threshold = 50; // Lower threshold for easier triggering
     
     if (diff > threshold && activeIndex > 0) {
       setActiveIndex(activeIndex - 1);
@@ -47,7 +47,7 @@ export function TaskCarousel3D({ tasks }: TaskCarousel3DProps) {
     }
   };
 
-  // 键盘导航
+  // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'ArrowLeft' && activeIndex > 0) {
@@ -61,7 +61,7 @@ export function TaskCarousel3D({ tasks }: TaskCarousel3DProps) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [activeIndex, tasks.length]);
 
-  // 滚轮导航（带防抖）
+  // Wheel navigation with debounce
   useEffect(() => {
     let wheelTimeout: NodeJS.Timeout;
     
@@ -70,7 +70,7 @@ export function TaskCarousel3D({ tasks }: TaskCarousel3DProps) {
       
       e.preventDefault();
       
-      // 防抖：避免滚轮过快触发
+      // Debounce: avoid triggering too fast
       clearTimeout(wheelTimeout);
       wheelTimeout = setTimeout(() => {
         if (e.deltaY > 20 && activeIndex < tasks.length - 1) {
@@ -94,7 +94,7 @@ export function TaskCarousel3D({ tasks }: TaskCarousel3DProps) {
   if (tasks.length === 0) {
     return (
       <div style={styles.emptyState}>
-        <div style={styles.emptyIcon}>📋</div>
+        <div style={styles.emptyIcon}>🔍</div>
         <h3 style={styles.emptyTitle}>NO TASKS FOUND</h3>
         <p style={styles.emptyText}>
           Try adjusting your filters or be the first to publish a task
@@ -128,7 +128,7 @@ export function TaskCarousel3D({ tasks }: TaskCarousel3DProps) {
           ))}
         </div>
         
-        {/* 拖拽提示 */}
+        {/* Drag hint */}
         {!isDragging && tasks.length > 1 && (
           <div style={styles.dragHint}>
             ← DRAG TO BROWSE →
